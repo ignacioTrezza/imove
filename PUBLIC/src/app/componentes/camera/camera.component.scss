@@ -1,0 +1,105 @@
+
+.size-camera{
+    $size: 100px;
+    width: $size;
+    height: $size;  
+    z-index: 3; 
+}
+.marker-visor{
+    $setPosOverX: 50px;
+    $setPosOverY: 50px;
+    width: 10px;
+    height: 10px;
+    border: 2px solid rgba(255, 30, 0, 0.993);
+    position: absolute;
+    margin-left: 10px;;
+    margin-top: 10px;;
+    z-index: 200; 
+}
+.marker-visor-mask{
+    width: 10px;
+    height: 10px;
+    border: 2px solid rgb(0, 255, 13);
+    border-color: rgba(255, 30, 0, 0.993)!important;
+    position: absolute;
+    margin-left: 5px;
+    margin-top: 5px;
+    z-index: 200;
+    
+}
+.info-consulta{
+    opacity: 0.9;
+}
+.pixel-color{
+    $colorpix: rgb(84, 243, 84);
+    // background-color: $colorpix;
+    display: flex;
+}
+.pixel-color-mask{
+    $colorpixmask: rgb(243, 174, 84);
+    // background-color: $colorpix;
+    opacity: 0.5;
+    display: flex;
+}
+.block{
+    z-index: 20;
+    background-color: chartreuse;
+    cursor: pointer;;
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    margin-left: 0px;
+    // opacity: 0.5;
+}
+.block:hover{
+    background-color: aqua;
+}
+.mouse-position {
+    position: fixed;
+    top: 0;
+    right: 0;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 14px;
+  }
+  .mask-1{
+    display: flex;
+    .flex-consult-card{
+      
+        z-index: 100;
+      }
+  }
+  .controlador{
+    display: flex;
+    flex-direction: row;
+    width: auto;
+  }
+  .controladores{
+    display: flex;
+    direction: row;
+  }
+  .controles{
+    display: flex;
+    flex-direction: column;
+    background-color: blueviolet;
+    border: 1px solid black;
+  }
+  .control{
+    flex-direction: column;
+    background-color: aqua;
+    border: 1px solid black;
+    cursor:pointer
+  }
+  .selected{
+    background-color: rgb(168, 191, 20);
+  }
+  .unselected{
+    background-color: aqua;
+  }
+.op-lista{
+    display: flex;
+    direction: row;
+    height: 100%;
+    .control{    height: 100%;}
+}

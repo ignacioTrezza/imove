@@ -1,0 +1,52 @@
+<div class="controlador">
+    <div class="controladores">
+        <div class="controles">Lista
+            <div *ngFor="let lis of _consult.gruposListaVinculados index as index">
+                <div class="control" (mouseover)="selected[0]=index">{{lis.nombre}}</div>
+            </div>
+        </div>
+        <div class="controles">Op
+            <div class="op-lista">
+            <div  *ngFor="let lis of opcionesLista; index as index">
+                <div class="control" (click)="optionController(index,selected[0])">{{lis}}</div>
+            </div>
+        </div>
+        </div>
+        <div class="controles">Vinculados
+            <div *ngFor="let lis of _consult.gruposListaVinculados[selected[0]].vinculados">
+                <div class="control">{{lis.descripcion}}</div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+<button type="button" (click)="onStart()">Start</button>
+<button type="button" (click)="onStop()">stop</button>
+<br>
+<div *ngFor="let consult of aConsultar; index as ind">
+ <!-- verde -->
+ <div class="marker-visor-mask" 
+ [ngStyle]="{'margin-left': aConsultar[ind].xstring, 'margin-top': aConsultar[ind].ystring, 'border-color': aConsultar[ind].color}"
+ (mouseover)="showInfo[ind]=true; lastOver=ind" 
+ (mouseleave)="showInfo[ind]=false"> 
+ <app-primary ngClass="info-consulta" *ngIf="showInfo[ind]"
+ [consulta]="aConsultar[ind]"
+ (agregarConsultas)="addConsulta(consult)">
+ </app-primary>
+</div> 
+</div>
+
+<!-- rojo -->
+<!-- <div class="marker-visor" 
+ [ngStyle]="{'margin-left': aConsultar[1].xstring, 'margin-top': aConsultar[1].ystring, 'background-color': aConsultar[1].color}"
+ (mouseover)="showInfo[1]=true; lastOver=1" 
+ (mouseleave)="showInfo[1]=false"
+ (dragend)="setPos($event)"> 
+ <app-primary ngClass="info-consulta" *ngIf="showInfo[1]"
+    [consulta]="aConsultar[1]"
+    (agregarConsulta)="addConsulta($event)">
+ </app-primary>
+</div> -->
+
+<video #video class="size-camera" (click)="setPos($event)" [ngStyle]="{$size:size}"></video>   
+

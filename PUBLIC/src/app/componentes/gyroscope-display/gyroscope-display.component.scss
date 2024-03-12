@@ -1,0 +1,19 @@
+.arrow-container {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+.arrow {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 10px solid black; // Black arrow for accelerometer
+}
+
+.gyroscope {
+  border-bottom-color: green; // Green arrow for gyroscope
+}

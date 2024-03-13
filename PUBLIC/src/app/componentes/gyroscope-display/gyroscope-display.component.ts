@@ -1,10 +1,12 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ElectronService } from '../../services/electron.service';
+import { CommonModule, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-gyroscope-display',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
+  providers: [DecimalPipe],
   templateUrl: './gyroscope-display.component.html',
   styleUrl: './gyroscope-display.component.scss'
 })
@@ -20,7 +22,7 @@ export class GyroscopeDisplayComponent  implements OnChanges {
     if (changes['x'] || changes['y'] || changes['z']) {
       // Implement rotation logic based on gyroscope data
       this.rotation = Math.atan2(this.y, this.x) * (180 / Math.PI);
-      this.electronService.electronAPI.moveCursorTo(500,700);
+      // this.electronService.electronAPI.moveCursorTo(500,700);
        // Calculate tilt as the angle in the XY plane from the Z-axis
        this.tilt = Math.atan2(Math.sqrt(this.x * this.x + this.y * this.y), this.z) * (180 / Math.PI);
     }

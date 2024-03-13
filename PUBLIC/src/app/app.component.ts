@@ -41,6 +41,7 @@ export class AppComponent implements OnInit, OnDestroy {
       
           case 'MousePos':  if (message.x && message.y) {
               console.log(`Mouse position: x=${message.x}, y=${message.y}`);
+
             }
               
               break;
@@ -54,7 +55,7 @@ export class AppComponent implements OnInit, OnDestroy {
               break;
           case 'Gyroscope': if (message.alpha && message.beta && message.gamma) {
             if(this.electronService.isElectron){
-            this.electronService.electronAPI.moveCursorTo(message.alpha! , message.beta!)
+            // this.electronService.electronAPI.moveCursorTo(message.alpha! , message.beta!)
             }
               console.log(`Gyroscope data: alpha=${message.alpha}, beta=${message.beta}, gamma=${message.gamma}`);
             }
@@ -63,9 +64,21 @@ export class AppComponent implements OnInit, OnDestroy {
                
           case 'Accelerometer': if (message.x && message.y && message.z) {
             if(this.electronService.isElectron){
-              this.electronService.electronAPI.moveCursorTo(message.x! , message.y!)            
+              // this.electronService.electronAPI.moveCursorTo(message.x! , message.y!)            
             }
             console.log(`Accelerometer data: X=${message.x}, Y=${message.y}, Z=${message.z}`);
+            }
+              
+              break;
+
+          case 'AccelerometerIncludingGravity': if (message.x && message.y && message.z) {
+            if(this.electronService.isElectron){
+              // this.websocketService.emitProcessedPointerData(message.x, message.y, message.z)
+              this.electronService.electronAPI.moveCursorTo(message.x, message.y);   
+
+           
+            }
+            console.log(`Accelerometer Including Gravity dataa: X=${message.x}, Y=${message.y}, Z=${message.z}`);
             }
               
               break;
@@ -114,7 +127,16 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   handleMotion(event: DeviceMotionEvent): void {
-    if (event.acceleration) {
+    if (event.accelerationIncludingGravity) {
+      const payload = {
+        tipo: 'AccelerometerIncludingGravity',
+        x: event.accelerationIncludingGravity.x,
+        y: event.accelerationIncludingGravity.y,
+        z: event.accelerationIncludingGravity.z
+      };
+      this.websocketService.sendMessage(payload);
+      this.websocketService.emitAccelerometerIncludingGravityData(event.accelerationIncludingGravity.x!, event.accelerationIncludingGravity.y!, event.accelerationIncludingGravity.z!);
+    } else if (event.acceleration) {
       const payload = {
         tipo: 'Accelerometer',
         x: event.acceleration.x,
@@ -122,7 +144,7 @@ export class AppComponent implements OnInit, OnDestroy {
         z: event.acceleration.z
       };
       this.websocketService.sendMessage(payload);
-      this.websocketService.emitAccelerometerData(event.acceleration.x!, event.acceleration.y!, event.acceleration.z!);
+      // this.websocketService.emitAccelerometerData(event.acceleration.x!, event.acceleration.y!, event.acceleration.z!);
     }
   }
 
@@ -136,7 +158,7 @@ export class AppComponent implements OnInit, OnDestroy {
   onClick(event: MouseEvent): void {
     const payload = { tipo: 'Click', x: event.clientX, y: event.clientY };
     this.websocketService.sendMessage(payload);
-    this.websocketService.emitClick(event.clientX, event.clientY);
+    // this.websocketService.emitClick(event.clientX, event.clientY);
   }
  
 }

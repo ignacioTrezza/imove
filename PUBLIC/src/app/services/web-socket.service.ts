@@ -11,6 +11,8 @@ export class WebsocketService {
   public accelerometerData = new EventEmitter<{ x: number; y: number; z: number }>();
   public gyroscopeData = new EventEmitter<{ alpha: number; beta: number; gamma: number }>();
   public Click = new EventEmitter<{ x: number; y: number }>();
+  public accelerometerIncludingGravityData = new EventEmitter<{ x: number; y: number; z: number }>();
+  public processedPointerData = new EventEmitter<{ x: number; y: number; z: number }>();
   constructor() { }
 
   connect(ipAddress: string): void {
@@ -43,5 +45,11 @@ export class WebsocketService {
   emitClick(x: number, y: number): void {
     this.Click.emit({ x, y });
   }
-}
 
+  emitAccelerometerIncludingGravityData(x: number, y: number, z: number): void {
+    this.accelerometerIncludingGravityData.emit({ x, y, z });
+  }
+  emitProcessedPointerData(x: number, y: number, z: number): void {
+    this.processedPointerData.emit({ x, y, z });
+  }
+}

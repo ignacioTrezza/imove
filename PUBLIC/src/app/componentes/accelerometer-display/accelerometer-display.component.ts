@@ -1,11 +1,14 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ElectronService } from '../../services/electron.service';
+import { CommonModule, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-accelerometer-display',
   standalone: true,
+  imports: [CommonModule],
   templateUrl: './accelerometer-display.component.html',
-  styleUrls: ['./accelerometer-display.component.scss']
+  styleUrls: ['./accelerometer-display.component.scss'],
+  providers: [DecimalPipe]
 })
 export class AccelerometerDisplayComponent implements OnChanges {
   @Input() x: number = 0;
@@ -20,7 +23,7 @@ export class AccelerometerDisplayComponent implements OnChanges {
       this.rotation = Math.atan2(this.y, this.x) * (180 / Math.PI);
       // Calculate tilt as the angle in the XY plane from the Z-axis
       this.tilt = Math.atan2(Math.sqrt(this.x * this.x + this.y * this.y), this.z) * (180 / Math.PI);
-      this.electronService.electronAPI.moveCursorTo(200, 300);
+      // this.electronService.electronAPI.moveCursorTo(200, 300);
     }
   }
   getFillColor(tilt: number): string {

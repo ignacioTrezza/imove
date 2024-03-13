@@ -3,7 +3,6 @@ interface ElectronAPI {
   moveCursorTo(x: number, y: number): void;
   clickIn(x: number, y: number): void;
   getLocalIpAddress(): string;
-  getMousePos(): { x: number; y: number };
 }
 @Injectable({
   providedIn: 'root'

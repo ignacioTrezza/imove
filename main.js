@@ -42,10 +42,26 @@ const createWindow = () => {
   })
 // Listen for the move-cursor message
 ipcMain.on('move-cursor', (event, { x, y }) => {
-  console.log(`moveCursorDetected (X:${x}, Y:${y}, ${event})`)
-  robot.moveMouse(x, y); // Move the cursor to the specified position
+  console.log(`moveCursorDetected (X:${x}, Y:${y})`)
+  const pos = robot.getMousePos();
+  const sensitivity = 1.5; // Adjust this based on your needs
+    let deltaX = x * sensitivity;
+    let deltaY = y * sensitivity;
+
+    // Calculate new position
+    let newX = pos.x - (deltaX>=3 || deltaX<=-3 ? deltaX : 0);
+    let newY =  pos.y - (deltaY>=3 || deltaY<=-3 ? deltaY : 0); // Subtract deltaY because screen coordinates in Y are inverted
+    let newZ = 0;
+    // Boundary checks (assuming screen resolution of 1920x1080, adjust as needed)
+    newX = Math.max(0, Math.min(newX, 1920));
+    newY = Math.max(0, Math.min(newY, 1080));
+      // Handle accelerometer including gravity data
+      // this.electronService.electronAPI.moveCursorTo(newX, newY);
+  robot.moveMouse(newX, newY); // Move the cursor to the specified position
 });
 ipcMain.on('click-mouse', (event, { x, y }) => {
   console.log(`MouseClick detected (X:${x}, Y:${y})`)
-  robot.mouseClick(); //{button: 'left'}  Move the cursor to the specified position
+  robot.mouseClick({button: 'left'}); //{button: 'left'}  Move the cursor to the specified position
 });
+
+

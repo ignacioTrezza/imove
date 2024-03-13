@@ -12,8 +12,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     document.body.appendChild(img); // Assuming you want to append to the body
   });},
   getLocalIpAddress: () => getLocalIpAddress(),
-  getMousePos: () => getMousePos(),
 }),
+
 
 
 // Function to get the local IP address
@@ -29,9 +29,7 @@ function getLocalIpAddress() {
   }
   return '127.0.0.1'; // Return localhost if no external IP found
 }
- function getMousePos(){
-  return {x: 0, y: 0}
- }
+
 
 window.addEventListener('DOMContentLoaded', () => {
   
@@ -53,4 +51,11 @@ window.addEventListener('DOMContentLoaded', () => {
    document.body.appendChild(img); // Assuming you want to append to the body
     }
   });
+  // Listen for the mouse position response from the main process
+// ipcRenderer.on('mouse-pos-response', (event, { x, y }) => {
+//   console.log(`Mouse Position Received (X:${x}, Y:${y})`);
+//   // You can now use this position in your renderer process
+//   // For example, you might want to display it or use it in some calculations.
+//   // Note: You'll need to implement a way to use this data in your application, such as calling a function or emitting a custom event with this data.
+// });
 })

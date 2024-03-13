@@ -38,16 +38,22 @@ wss.on('connection', function connection(ws) {
                 break;
 
             case 'Gyroscope': if (data.alpha && data.beta && data.gamma) {
-                console.log(`Gyroscope data: alpha=${data.alpha}, beta=${data.beta}, gamma=${data.gamma}`);
+                // console.log(`Gyroscope data: alpha=${data.alpha}, beta=${data.beta}, gamma=${data.gamma}`);
               }
                 
                 break;
                  
             case 'Accelerometer': if (data.x && data.y && data.z) {
-                console.log(`Accelerometer data: X=${data.x}, Y=${data.y}, Z=${data.z}`);
+                // console.log(`Accelerometer data: X=${data.x}, Y=${data.y}, Z=${data.z}`);
               }
                 
                 break;
+
+            case 'AccelerometerIncludingGravity': if (data.x && data.y && data.z) {
+                console.log(`Accelerometer Including Gravity data: X=${data.x}, Y=${data.y}, Z=${data.z}`);
+              }
+              
+              break;
                               
             default: 
                 break;
@@ -61,7 +67,7 @@ wss.on('connection', function connection(ws) {
       if (client !== ws && client.readyState === WebSocket.OPEN) {
         
         const payload = JSON.parse(message) 
-        console.log('sENDING mESSAGE',JSON.stringify(payload));
+        // console.log('sENDING mESSAGE',JSON.stringify(payload));
         // client.send(JSON.stringify(message));
         client.send(JSON.stringify(payload));
         }

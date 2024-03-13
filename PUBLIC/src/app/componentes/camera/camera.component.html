@@ -25,15 +25,15 @@
 <br>
 <div *ngFor="let consult of aConsultar; index as ind">
  <!-- verde -->
- <div class="marker-visor-mask" 
+ <!-- <div class="marker-visor-mask" 
  [ngStyle]="{'margin-left': aConsultar[ind].xstring, 'margin-top': aConsultar[ind].ystring, 'border-color': aConsultar[ind].color}"
  (mouseover)="showInfo[ind]=true; lastOver=ind" 
  (mouseleave)="showInfo[ind]=false"> 
  <app-primary ngClass="info-consulta" *ngIf="showInfo[ind]"
  [consulta]="aConsultar[ind]"
  (agregarConsultas)="addConsulta(consult)">
- </app-primary>
-</div> 
+ </app-primary> 
+</div>  -->
 </div>
 
 <!-- rojo -->
@@ -48,5 +48,5 @@
  </app-primary>
 </div> -->
 
-<video #video class="size-camera" (click)="setPos($event)" [ngStyle]="{$size:size}"></video>   
+<video #video class="size-camera" (click)="setPos($event)"></video>   
 

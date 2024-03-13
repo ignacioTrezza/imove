@@ -4,20 +4,24 @@ import { ElectronService } from './services/electron.service';
 
 import { AnotherSubscriberComponent } from './componentes/another-subscriber/another-subscriber.component';
 import { SensorMessage } from './core/interfaces/sensor.interfaces';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   standalone: true,
-  imports: [AnotherSubscriberComponent]
+  imports: [AnotherSubscriberComponent, CommonModule],
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'Imove';
 
+  public electronService: ElectronService;
+
   constructor(
     private websocketService: WebsocketService,
-    private electronService: ElectronService) {
+    electronService: ElectronService) {
+      this.electronService = electronService;
       if (this.electronService.isElectron) {
         // Use Electron APIs, e.g., this.electronService.electronAPI.moveCursorTo(...)
         console.log('electronServiceAPI',this.electronService.isElectron )

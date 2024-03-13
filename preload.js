@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     document.body.appendChild(img); // Assuming you want to append to the body
   });},
   getLocalIpAddress: () => getLocalIpAddress(),
+ 
 }),
 
 
@@ -68,5 +69,44 @@ window.addEventListener('DOMContentLoaded', () => {
       img.src = url;
       document.body.appendChild(img); // Assuming you want to append to the body
     }
+  });
+  function generateWifiURL(ssid, password) {
+    return `WIFI:S:${ssid};T:WPA;P:${password};;`;
+  }
+  // Replace 'your_ssid' and 'your_password' with actual SSID and password
+  const ssid = 'TP-Link_CDDC_5G';
+  const password = '52269189';
+  const wifiURL = generateWifiURL(ssid, password);
+
+  // Generate QR code for the WiFi connection URL
+  qrcode.toDataURL(wifiURL, function (err, url) {
+    if (err) throw err;
+    else {
+      console.log('url', url);
+      // Create a container for the QR code and the title
+      const qrContainer = document.createElement('div');
+      qrContainer.style.textAlign = 'center'; // Center align the content
+      qrContainer.style.position = 'fixed'; // Fix position to the bottom
+      qrContainer.style.bottom = '0'; // Position at the bottom
+      qrContainer.style.width = '100%'; // Take full width
+      qrContainer.style.backgroundColor = '#fff'; // Background color
+      qrContainer.style.padding = '20px'; // Padding for aesthetics
+
+      // Create a title element
+      const title = document.createElement('h2');
+      title.textContent = 'Scan to get Wifi';
+      qrContainer.appendChild(title); // Append the title to the container
+
+      // Create an image element to display the QR code
+      const img = document.createElement('img');
+      img.src = url;
+      qrContainer.appendChild(img); // Append the image to the container
+
+      document.body.appendChild(qrContainer); // Append the container to the body
+    }
+  })
+  ipcRenderer.on('wifi-details', (event, details) => {
+    console.log('Received Wi-Fi details:', details);
+    // Update UI or logic based on Wi-Fi details
   });
 })

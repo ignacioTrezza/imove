@@ -59,9 +59,9 @@ ipcMain.on('move-cursor', (event, { x, y }) => {
       // this.electronService.electronAPI.moveCursorTo(newX, newY);
   robot.moveMouse(newX, newY); // Move the cursor to the specified position
 });
-ipcMain.on('click-mouse', (event, { x, y }) => {
-  console.log(`MouseClick detected (X:${x}, Y:${y})`)
-  robot.mouseClick({button: 'left'}); //{button: 'left'}  Move the cursor to the specified position
+ipcMain.on('click-mouse', (event) => {
+  console.log(`MouseClick detected (Event:${event})`)
+  robot.mouseClick(); //{button: 'left'}  Move the cursor to the specified position
 });
 
 

@@ -41,5 +41,4 @@ function getWifiDetails(callback) {
   }
 }
 
-
-
+module.exports = { getWifiDetails };

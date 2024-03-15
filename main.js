@@ -3,7 +3,7 @@ const path = require('node:path')
 const robot = require('robotjs'); // Import robotjs
 const server = require('./server.js');
 const os = require('os'); // Import the os module
-const { getWifiDetails } = require('./wifi-details.js'); // Adjust the path as necessary
+const  {getWifiDetails}  = require('./wifi-details.js'); // Adjust the path as necessary
 
 //Inicializo el servidor
 server;
@@ -24,15 +24,15 @@ const createWindow = () => {
   }
   
   app.whenReady().then(() => {
-    // getWifiDetails((error, details) => {
-    //   if (error) {
-    //     console.error('Failed to get Wi-Fi details:', error);
-    //   } else {
-    //     console.log('Wi-Fi Details:', details);
-    //     mainWindow.webContents.send('wifi-details', details);
-    //     // Optionally, use these details when creating the window or in other app logic
-    //   }
-    // });
+    getWifiDetails((error, details) => {
+      if (error) {
+        console.error('Failed to get Wi-Fi details:', error);
+      } else {
+        console.log('Wi-Fi Details:', details);
+        mainWindow.webContents.send('wifi-details', details);
+        // Optionally, use these details when creating the window or in other app logic
+      }
+    });
     createWindow()
     session.defaultSession.setCertificateVerifyProc((request, callback) => {
       if (request.hostname === '192.168.0.129') {

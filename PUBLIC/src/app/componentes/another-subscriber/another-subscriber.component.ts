@@ -6,11 +6,12 @@ import { AccelerometerDisplayComponent } from '../accelerometer-display/accelero
 import { AccelerometerIncludingGravityDisplayComponent } from '../gravity-display/accelerometer-including-gravity-display.component';
 import { GyroscopeDisplayComponent } from '../gyroscope-display/gyroscope-display.component';
 import { CommonModule, DecimalPipe } from '@angular/common';
+import { RealExpressComponent } from '../real-express/real-express/real-express.component';
 
 @Component({
   selector: 'app-another-subscriber',
   standalone: true,
-  imports: [AccelerometerDisplayComponent,AccelerometerIncludingGravityDisplayComponent,GyroscopeDisplayComponent, CommonModule], 
+  imports: [RealExpressComponent, AccelerometerDisplayComponent,AccelerometerIncludingGravityDisplayComponent,GyroscopeDisplayComponent, CommonModule], 
   providers: [DecimalPipe],
   templateUrl: './another-subscriber.component.html',
   styleUrls: ['./another-subscriber.component.scss'],

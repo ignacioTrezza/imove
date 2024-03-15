@@ -5,12 +5,19 @@ const qrcode = require('qrcode');
 contextBridge.exposeInMainWorld('electronAPI', {
   moveCursorTo: (x, y) => ipcRenderer.send('move-cursor', { x, y }),
   clickIn: (event) => ipcRenderer.send('click-mouse', event),
-  other:()=>{ipcRenderer.on('qr-code', (event, url) => {
+  qrMagic:()=>{ipcRenderer.on('qr-code', (event, url) => {
     // Create an image element to display the QR code
     const img = document.createElement('img');
     img.src = url;
     document.body.appendChild(img); // Assuming you want to append to the body
+ 
   });},
+  qrWifi: () =>{ipcRenderer.on('qr-code-wifi', (event, url) => {
+    const imgWifi = document.createElement('img');
+    imgWifi.src = url;
+    document.body.appendChild(imgWifi); 
+    })},
+   
   getLocalIpAddress: () => getLocalIpAddress(),
  
 }),
@@ -65,6 +72,27 @@ window.addEventListener('DOMContentLoaded', () => {
     else {
       console.log('url', url);
       // Create an image element to display the QR code
+      const qrContainer = document.createElement('div');
+      qrContainer.style.textAlign = 'center'; // Center align the content
+      qrContainer.style.position = 'fixed'; // Fix position to the bottom
+      qrContainer.style.bottom = '0'; // Position at the bottom
+      qrContainer.style.width = '100%'; // Take full width
+      qrContainer.style.backgroundColor = '#fff'; // Background color
+      qrContainer.style.padding = '20px'; // Padding for aesthetics
+
+      // Create a title element
+      const title = document.createElement('h2');
+      title.textContent = 'Scan to start Magic Mirror';
+      qrContainer.appendChild(title); // Append the title to the container
+
+      // Create an image element to display the QR code
+      const imgWifi = document.createElement('img');
+      imgWifi.src = url;
+      qrContainer.appendChild(imgWifi); // Append the image to the container
+
+      document.body.appendChild(qrContainer);
+
+
       const img = document.createElement('img');
       img.src = url;
       document.body.appendChild(img); // Assuming you want to append to the body

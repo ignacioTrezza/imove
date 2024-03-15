@@ -3,6 +3,8 @@ interface ElectronAPI {
   moveCursorTo(x: number, y: number): void;
   clickIn(x: number, y: number): void;
   getLocalIpAddress(): string;
+  qrWifi(): void;
+  qrMagic(): void;
 }
 @Injectable({
   providedIn: 'root'

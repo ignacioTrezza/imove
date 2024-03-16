@@ -25,7 +25,7 @@ export class AppComponent implements OnInit, OnDestroy {
       if (this.electronService.isElectron) {
         // Use Electron APIs, e.g., this.electronService.electronAPI.moveCursorTo(...)
         console.log('electronServiceAPI',this.electronService.isElectron )
-        this.electronService.electronAPI.moveCursorTo(10, 10);
+        // this.electronService.electronAPI.moveCursorTo(10, 10);
       }
     }
 
@@ -34,7 +34,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.addDeviceEventListeners();
     console.log('electronServiceAPIaa',this.electronService.isElectron )
     if(this.electronService.isElectron){
-      this.electronService.electronAPI.moveCursorTo(10, 10); // Assuming default values for x and y as 'data' is not defined
+      // this.electronService.electronAPI.moveCursorTo(10, 10); // Assuming default values for x and y as 'data' is not defined
       console.log('electronServiceAPI',this.electronService.isElectron )
       this.websocketService.messages$.subscribe((message) => {
         
@@ -76,13 +76,15 @@ export class AppComponent implements OnInit, OnDestroy {
               
               break;
 
-          case 'AccelerometerIncludingGravity': if (message.x && message.y && message.z) {
+          case 'AccelerometerIncludingGravity':   if (message.x && message.y && message.z) {
             if(this.electronService.isElectron){
-              // this.websocketService.emitProcessedPointerData(message.x, message.y, message.z)
-              this.electronService.electronAPI.moveCursorTo(message.x, message.y);   
+              // this.electronService.electronAPI.moveCursorTo(message.x, message.y);  
+              console.log('ACELERGRAV:', message.x, message.y, message.z )
+              this.websocketService.emitAccelerometerIncludingGravityData(message.x/10, message.y/10, message.z/10); 
             }
-            // console.log(`Accelerometer Including Gravity data: X=${message.x}, Y=${message.y}, Z=${message.z}`);
-            }
+            // Emitting data to be used by any subscribing component
+            
+          }
               
               break;
                             
@@ -119,6 +121,23 @@ export class AppComponent implements OnInit, OnDestroy {
   addDeviceEventListeners(): void {
     window.addEventListener('deviceorientation', this.handleOrientation.bind(this), true);
     window.addEventListener('devicemotion', this.handleMotion.bind(this), true);
+    if (typeof (DeviceMotionEvent as any).requestPermission === 'function') {
+      (DeviceMotionEvent as any).requestPermission()
+        .then((response: string) => {
+          if (response == 'granted') {
+            window.addEventListener('devicemotion', (event) => {
+              this.handleMotion(event);
+            });
+          } else {
+            console.log('Permission to access motion and orientation was denied');
+          }
+        })
+        .catch(console.error);
+    } else {
+      window.addEventListener('devicemotion', (event) => {
+        this.handleMotion(event);
+      });
+    }
   }
 
   removeDeviceEventListeners(): void {
@@ -147,6 +166,7 @@ export class AppComponent implements OnInit, OnDestroy {
       };
       this.websocketService.sendMessage(payload);
       this.websocketService.emitAccelerometerIncludingGravityData(event.accelerationIncludingGravity.x!, event.accelerationIncludingGravity.y!, event.accelerationIncludingGravity.z!);
+      console.log('accelerationGRAVITY' ,event.accelerationIncludingGravity)
     } else if (event.acceleration) {
       const payload = {
         tipo: 'Accelerometer',

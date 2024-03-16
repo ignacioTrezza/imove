@@ -32,7 +32,7 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    document.getElementById('threejs-container')!.appendChild(this.renderer.domElement);
+    document.getElementById('threejs-container')!.append(this.renderer.domElement);
     this.animate();
   }
 
@@ -45,13 +45,13 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private initThree(): void {
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1500);
     this.renderer = new THREE.WebGLRenderer();
     this.geometry = new THREE.BoxGeometry();
     this.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     this.cube = new THREE.Mesh(this.geometry, this.material);
     this.scene.add(this.cube);
-    this.camera.position.z = 5;
+    this.camera.position.z = 10; 
   }
 
   private animate(): void {
@@ -60,20 +60,37 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private subscribeToData(): void {
-    this.accelSubscription = this.websocketService.accelerometerData.subscribe(data => {
-      // Update Three.js object with accelData
-    });
-
-    this.gyroSubscription = this.websocketService.gyroscopeData.subscribe(data => {
-      // Update Three.js object with gyroData
-    });
+    // Other subscriptions remain unchanged
 
     this.accelIncludingGravitySubscription = this.websocketService.accelerometerIncludingGravityData.subscribe(data => {
-      // Update Three.js object with accelIncludingGravityData
-    });
-
-    this.processedPointerSubscription = this.websocketService.processedPointerData.subscribe(data => {
-      // Update Three.js object with processedPointerData
+      // Assuming 'data' might be a stringified JSON. If it's already an object, this step is unnecessary.
+      console.log('data:',data);
+      let parsedData;
+      try {
+        parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+      } catch (error) {
+        console.error('Error parsing accelerometerIncludingGravityData:', error);
+        return;
+      }
+    
+      const { x, y, z } = parsedData;
+      // this.cube.position.x = 1;
+      //   this.cube.position.y = 1;
+      //   this.cube.position.z = 1;
+        console.log('XYZ:', x, y, z, this.cube.position.x , this.cube.position.y, this.cube.position.z);
+    
+      if (x !== null && y !== null && z !== null) {
+        this.cube.position.x = Math.min(Math.max(this.cube.position.x, -20), 20);
+        this.cube.position.y = Math.min(Math.max(this.cube.position.y, -20), 20);
+        this.cube.position.z = Math.min(Math.max(this.cube.position.z, -20), 20);;
+        // Adjust z if necessary, or you might not need to clamp z in a 2D plane
+        this.cube.position.z = z;
+      } else {
+        this.cube.position.x = 0;
+        this.cube.position.y = 0;
+        this.cube.position.z = 0;
+        console.log('XYZ:', x, y, z, this.cube.position.x , this.cube.position.y, this.cube.position.z);
+      }
     });
   }
 }

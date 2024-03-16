@@ -3,3 +3,11 @@
 // <app-gyroscope-display [x]="alpha" [y]="gyroBeta" [z]="gyroGamma"></app-gyroscope-display>   
 
 
+.real-express{
+    width: auto;
+    height: 300rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+

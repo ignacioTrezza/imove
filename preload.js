@@ -90,7 +90,7 @@ window.addEventListener('DOMContentLoaded', () => {
       imgWifi.src = url;
       qrContainer.appendChild(imgWifi); // Append the image to the container
 
-      // document.body.appendChild(qrContainer);
+      document.body.appendChild(qrContainer);
 
 
       // const img = document.createElement('img');

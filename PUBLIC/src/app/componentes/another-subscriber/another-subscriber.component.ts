@@ -2,17 +2,15 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { WebsocketService } from '../../services/web-socket.service';
 import { ElectronService } from '../../services/electron.service';
-import { AccelerometerDisplayComponent } from '../accelerometer-display/accelerometer-display.component';
-import { AccelerometerIncludingGravityDisplayComponent } from '../gravity-display/accelerometer-including-gravity-display.component';
-import { GyroscopeDisplayComponent } from '../gyroscope-display/gyroscope-display.component';
-import { CommonModule, DecimalPipe } from '@angular/common';
-import { RealExpressComponent } from '../real-express/real-express/real-express.component';
+import { AppState } from '../../core/store/app.state';
+import { Store, select } from '@ngrx/store';
+import { selectToggleEventHandling } from '../../core/store/selectors/app.selectors';
+
+import * as AppActions from '../../core/store/actions/app.actions';
 
 @Component({
   selector: 'app-another-subscriber',
-  standalone: true,
-  imports: [RealExpressComponent, AccelerometerDisplayComponent,AccelerometerIncludingGravityDisplayComponent,GyroscopeDisplayComponent, CommonModule], 
-  providers: [DecimalPipe],
+  standalone: false,
   templateUrl: './another-subscriber.component.html',
   styleUrls: ['./another-subscriber.component.scss'],
 })
@@ -37,9 +35,17 @@ export class AnotherSubscriberComponent implements OnInit, OnDestroy {
   public newX: number = 0;
   public newY: number = 0;
   public newZ: number = 0;
-  constructor(private websocketService: WebsocketService, private electronService: ElectronService) {}
+  public handleClientEvent: boolean = false;
+  constructor(
+    private store: Store<AppState>,
+    private websocketService: WebsocketService,
+    private electronService: ElectronService
+    ) {}
 
   ngOnInit(): void {
+    this.store.pipe(select(selectToggleEventHandling)).subscribe(enableEventHandling => {
+      this.handleClientEvent = enableEventHandling;
+    });
     this.accelSubscription = this.websocketService.accelerometerData.subscribe(({ x, y, z }) => {
       console.log(`Accelerometer: x=${x}, y=${y}, z=${z}`);
       this.accelX = x;
@@ -72,49 +78,33 @@ export class AnotherSubscriberComponent implements OnInit, OnDestroy {
 
     })
   }
-    // Combine all subscriptions to call updateMousePosition
-    // this.gyroSubscription;
-    // this.accelIncludingGravitySubscription;
-    // this.accelSubscription;
-   
-      // this.websocketService.messages$.subscribe(() => {
-      //   this.updateMousePosition();
-      // })
-    
   
+  handleClientEventClick(): void {
+    if (this.electronService.isElectron) {
+      this.handleClientEvent = !this.handleClientEvent;
+      this.store.dispatch(AppActions.toggleEventHandling());
+      this.websocketService.emitHandleClientEvent(this.handleClientEvent); // Emit true when the button is clicked
+    }
+  }
+
   moveCursorBasedOnAcceleration(currentX: number, currentY: number, x:number, y:number, z:number): void {
-    // Normalize acceleration data to a range that suits your screen size and preferences
-    const sensitivity = 10; // Adjust this based on your needs
-    let deltaX = x * sensitivity;
-    let deltaY = y * sensitivity;
+    if (this.electronService.isElectron) {
+      // Normalize acceleration data to a range that suits your screen size and preferences
+      const sensitivity = 10; // Adjust this based on your needs
+      let deltaX = x * sensitivity;
+      let deltaY = y * sensitivity;
 
-    // Calculate new position
-    this.newX = currentX + deltaX;
-    this.newY = currentY - deltaY; // Subtract deltaY because screen coordinates in Y are inverted
-this.newZ = 0;
-    // Boundary checks (assuming screen resolution of 1920x1080, adjust as needed)
-    this.newX = Math.max(0, Math.min(this.newX, 1920));
-    this.newY = Math.max(0, Math.min(this.newY, 1080));
-      // Handle accelerometer including gravity data
-      this.websocketService.emitProcessedPointerData(this.newX, this.newY, this.newZ);
-    };
-  // updateMousePosition(): void {
-  //   // Adjust these based on experimentation
-  //   const sensitivityMultiplier = 100; // Increase for more sensitivity
-  //   const smoothingFactor = 0.8; // Between 0 and 1, higher for more smoothing
-
-  //   // Apply sensitivity and smoothing
-  //   this.newX = (this.newX * smoothingFactor) + ((this.accelX * sensitivityMultiplier + this.gyroAlpha) * (1 - smoothingFactor));
-  //   this.newY = (this.newY * smoothingFactor) + ((this.accelY * sensitivityMultiplier + this.gyroBeta) * (1 - smoothingFactor));
-
-  //   // Boundary checks
-  //   this.newX = Math.max(0, Math.min(this.newX, 1920));
-  //   this.newY = Math.max(0, Math.min(this.newY, 1080));
-
-  //   this.websocketService.emitProcessedPointerData(this.newX, this.newY, this.newZ);
-  //   // Move the cursor
-  //   this.electronService.electronAPI.moveCursorTo(this.newX, this.newY);
-  // }
+      // Calculate new position
+      this.newX = currentX + deltaX;
+      this.newY = currentY - deltaY; // Subtract deltaY because screen coordinates in Y are inverted
+      this.newZ = 0;
+      // Boundary checks (assuming screen resolution of 1920x1080, adjust as needed)
+      this.newX = Math.max(0, Math.min(this.newX, 1920));
+      this.newY = Math.max(0, Math.min(this.newY, 1080));
+        // Handle accelerometer including gravity data
+        this.websocketService.emitProcessedPointerData(this.newX, this.newY, this.newZ);
+    }
+  };
 
   ngOnDestroy(): void {
     this.accelSubscription.unsubscribe();

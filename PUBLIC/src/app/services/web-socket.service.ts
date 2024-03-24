@@ -13,6 +13,11 @@ export class WebsocketService {
   public Click = new EventEmitter<{ x: number; y: number }>();
   public accelerometerIncludingGravityData = new EventEmitter<{ x: number; y: number; z: number }>();
   public processedPointerData = new EventEmitter<{ x: number; y: number; z: number }>();
+  // Add a new EventEmitter for the handleClientEvent
+  public handleClientEvent = new EventEmitter<boolean>();
+  // Add a new EventEmitter for toggling remote clicks
+  public toggleRemoteClick = new EventEmitter<boolean>();
+
   constructor() { }
 
   connect(ipAddress: string): void {
@@ -51,5 +56,10 @@ export class WebsocketService {
   }
   emitProcessedPointerData(x: number, y: number, z: number): void {
     this.processedPointerData.emit({ x, y, z });
+  }
+
+  // Add a method to emit the event
+  emitHandleClientEvent(value: boolean): void {
+    this.handleClientEvent.emit(value);
   }
 }

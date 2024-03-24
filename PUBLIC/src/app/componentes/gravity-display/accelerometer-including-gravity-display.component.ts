@@ -4,8 +4,8 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-accelerometer-including-gravity-display',
-  standalone: true,
-  imports: [CommonModule],
+  standalone: false,
+  // imports: [CommonModule],
   providers: [DecimalPipe],
   templateUrl: './accelerometer-including-gravity-display.component.html',
   styleUrls: ['./accelerometer-including-gravity-display.component.scss']

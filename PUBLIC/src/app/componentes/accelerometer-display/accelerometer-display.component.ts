@@ -4,8 +4,8 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-accelerometer-display',
-  standalone: true,
-  imports: [CommonModule],
+  standalone: false,
+  // imports: [CommonModule],
   templateUrl: './accelerometer-display.component.html',
   styleUrls: ['./accelerometer-display.component.scss'],
   providers: [DecimalPipe]

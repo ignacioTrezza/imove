@@ -1,13 +1,14 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { WebsocketService } from '../../../services/web-socket.service';
+import { WebsocketService } from '../../services/web-socket.service';
 import * as THREE from 'three';
-import { CommonModule } from '@angular/common';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../core/store/app.state';
+import { selectToggleRemoteClick } from '../../core/store/selectors/app.selectors';
 
 @Component({
   selector: 'app-real-express',
-  standalone: true,
-  imports: [CommonModule],
+  standalone: false,
   templateUrl: './real-express.component.html',
   styleUrls: ['./real-express.component.scss']
 })
@@ -28,16 +29,32 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
   private previousX: number = 0;
   private previousY: number = 0;
   public importedCubes: THREE.Mesh[]=[];
+  public handleClientEventPower:boolean = false;
 
-  constructor(private websocketService: WebsocketService) {}
-
-  // @ViewChild(DataPointsComponent) dataPointsComponent!: DataPointsComponent;
+  constructor(private websocketService: WebsocketService,
+    private store: Store<AppState>) {}
 
   ngOnInit(): void {
     this.initThree();
-    this.subscribeToData();
     document.addEventListener('keydown', this.handleKeyDown.bind(this));
+    this.subscribeToGyroscopeData();
+    this.websocketService.handleClientEvent.subscribe((value) => {
+      if (value) {
+       if ( this.handleClientEventPower === true) {
+        this.handleClientEvent();
+        this.handleClientEventPower = false;
+
+       }else{
+        document.removeEventListener('mouseup', this.mouseUpListener);
+        document.removeEventListener('mousedown', this.mouseUpListener);
+        document.removeEventListener('mousemove', this.mouseUpListener);
+       }
+       console.log('.handleClientEventPower:', this.handleClientEventPower	);
+
+      }
+    });
   }
+  
 
   ngOnDestroy(): void {
     document.removeEventListener('keydown', this.handleKeyDown.bind(this));
@@ -45,6 +62,9 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
     this.gyroSubscription.unsubscribe();
     this.accelIncludingGravitySubscription.unsubscribe();
     this.processedPointerSubscription.unsubscribe();
+    document.removeEventListener('mouseup', this.mouseUpListener);
+    document.removeEventListener('mousedown', this.mouseUpListener);
+    document.removeEventListener('mousemove', this.mouseUpListener);
   }
 
   ngAfterViewInit(): void {
@@ -56,31 +76,11 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
       const delta = event.deltaY * 0.01;
       this.camera.position.z += delta;
     });
-    document.getElementById('threejs-container')!.addEventListener('mousedown', (event) => {
-      this.isDragging = true;
-      this.previousX = event.clientX;
-      this.previousY = event.clientY;
-    });
-    document.addEventListener('mousemove', (event) => {
-      if (this.isDragging) {
-        const deltaX = event.clientX - this.previousX;
-        const deltaY = event.clientY - this.previousY;
-        if (event.buttons === 1) {
-          this.scene.rotation.y += deltaX * 0.005;
-          this.scene.rotation.x += deltaY * 0.005;
-        } else if (event.buttons === 2) {
-          this.camera.position.x += deltaX * 0.01;
-          this.camera.position.y -= deltaY * 0.01;
-        }
-        this.previousX = event.clientX;
-        this.previousY = event.clientY;
+    
+    this.websocketService.handleClientEvent.subscribe((value) => {
+      if (value) {
+        this.handleClientEvent();
       }
-    });
-    document.addEventListener('mouseup', () => {
-      this.isDragging = false;
-    });
-    document.getElementById('threejs-container')!.addEventListener('contextmenu', (event) => {
-      event.preventDefault();
     });
   }
 
@@ -121,31 +121,69 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
     this.renderer.render(this.scene, this.camera);
   }
 
-  private subscribeToData(): void {
-    this.accelIncludingGravitySubscription = this.websocketService.accelerometerIncludingGravityData.subscribe(data => {
+  private subscribeToGyroscopeData(): void {
+    if (this.store.select(selectToggleRemoteClick)) { 
+    this.gyroSubscription = this.websocketService.gyroscopeData.subscribe(data => {
+
       console.log('data:',data);
       let parsedData;
       try {
         parsedData = typeof data === 'string' ? JSON.parse(data) : data;
       } catch (error) {
-        console.error('Error parsing accelerometerIncludingGravityData:', error);
+        console.error('Error parsing GyroscopeData:', error);
         return;
       }
     
-      const { x, y, z } = parsedData;
-        console.log('XYZ:', x, y, z, this.cube.position.x , this.cube.position.y, this.cube.position.z);
+      const { alpha, beta, gamma } = parsedData;
+        console.log('XYZ:', alpha, beta, gamma, this.cube.position.x , this.cube.position.y, this.cube.position.z);
     
-      if (x !== null && y !== null && z !== null) {
-        this.cube.position.x = this.cube.position.x + x;
-        this.cube.position.y = this.cube.position.y + y;
-        this.cube.position.z = this.cube.position.z + z/50;
+      if (alpha !== null && beta !== null && gamma !== null) {
+
+        const deltaX = alpha - this.previousX;
+        const deltaY = beta - this.previousY;
+          this.scene.rotation.y += deltaX * 0.005;
+          this.scene.rotation.x += deltaY * 0.005;
+        this.previousX = alpha;
+        this.previousY = beta;
       } else {
-        console.log('XYZ:', x, y, z, this.cube.position.x , this.cube.position.y, this.cube.position.z);
+        console.log('XYZ:', alpha, beta, gamma, this.cube.position.x , this.cube.position.y, this.cube.position.z);
       }
     });
+  }
   }
 
   private handleKeyDown(event: KeyboardEvent): void {
     console.log(`Key pressed: ${event.key}`);
+  }
+  private mouseUpListener = () => {
+    this.isDragging = false;
+  };
+
+  private handleClientEvent(): void {
+    document.getElementById('threejs-container')!.addEventListener('mousedown', (event) => {
+      console.log('mousedown', event);
+      this.isDragging = true;
+      this.previousX = event.clientX;
+      this.previousY = event.clientY;
+      document.addEventListener('mouseup', this.mouseUpListener);
+    });
+    document.addEventListener('mousemove', (event) => {
+      if (this.isDragging) {
+        const deltaX = event.clientX - this.previousX;
+        const deltaY = event.clientY - this.previousY;
+        if (event.buttons === 1) {
+          this.scene.rotation.y += deltaX * 0.005;
+          this.scene.rotation.x += deltaY * 0.005;
+        } else if (event.buttons === 2) {
+          this.camera.position.x += deltaX * 0.01;
+          this.camera.position.y -= deltaY * 0.01;
+        }
+        this.previousX = event.clientX;
+        this.previousY = event.clientY;
+      }
+    });
+    document.getElementById('threejs-container')!.addEventListener('contextmenu', (event) => {
+      event.preventDefault();
+    });
   }
 }

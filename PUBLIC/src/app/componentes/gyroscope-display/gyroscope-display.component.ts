@@ -1,14 +1,12 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ElectronService } from '../../services/electron.service';
-import { CommonModule, DecimalPipe } from '@angular/common';
-
 @Component({
+
   selector: 'app-gyroscope-display',
-  standalone: true,
-  imports: [CommonModule],
-  providers: [DecimalPipe],
+  standalone: false,
   templateUrl: './gyroscope-display.component.html',
-  styleUrl: './gyroscope-display.component.scss'
+  styleUrl: './gyroscope-display.component.scss',
+  
 })
 export class GyroscopeDisplayComponent  implements OnChanges {
 

@@ -17,5 +17,13 @@
 <div id="accelerometerData"></div>
 <div id="gyroscopeData"></div> -->
 
+<!-- Buttons to toggle event handling -->
+<button (click)="toggleRemoteClick()"  [ngClass]="{'active': (toggleRemoteClick$ | async)}">Toggle Remotely Click</button>
+<button (click)="toggleEventHandling()" [ngClass]="{'active': (toggleEventHandling$ | async)}">Toggle Event Handling</button>
+<button (click)="toggleAccelerometerHandling()" [ngClass]="{'active': (toggleAccelerometer$ | async)}">Toggle Accelerometer Handling</button>
+<button (click)="toggleAccelerometerIncludingGravityHandling()" [ngClass]="{'active': (toggleAccelerometerIncludingGravity$ | async)}">Toggle Accelerometer Including Gravity Handling</button>
+<button (click)="toggleGyroscopeHandling()" [ngClass]="{'active': (toggleGyroscope$ | async)}">Toggle Gyroscope Handling</button>
+<button (click)="toggleClickHandling()" [ngClass]="{'active': (toggleClick$ | async)}">Toggle Click Handling</button>
+<button (click)="toggleMousePosHandling()" [ngClass]="{'active': (toggleMousePos$ | async)}">Toggle Mouse Position Handling</button>
 <app-another-subscriber class="accomodation"></app-another-subscriber>
 

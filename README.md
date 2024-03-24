@@ -44,4 +44,8 @@ Git SSH
      ```ssh-add ~/.ssh/gitignaciotrezza/id_rsa```
      Paste the public_key in github sshSection
 
+Correr Angular
+```cd PUBLIC && npx ng serve```	
 
+For generate the dist/browser FrontEnd into electron Project
+```cd PUBLIC && npx ng build```	

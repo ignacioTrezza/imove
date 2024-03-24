@@ -103,4 +103,16 @@ this.actions$.pipe(
 ),
 { dispatch: false }
 );
+handleClientEvent$ = createEffect(() => 
+this.actions$.pipe(
+  ofType(AppActions.toggleClientEventHandling),
+  withLatestFrom(this.store.pipe(select(state => state.toggleClientEventHandling))),
+  tap(([action, toggleClientEventHandling]) => {
+    // this.enableRemoteClick = !toggleRemoteClick;
+    // this.websocketService.toggleEventHandling.emit(this.enableRemoteClick);
+
+  })
+),
+{ dispatch: false }
+);
 }

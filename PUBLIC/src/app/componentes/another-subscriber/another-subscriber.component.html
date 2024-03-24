@@ -3,6 +3,7 @@
 <!-- <app-accelerometer-including-gravity-display [x]="accelIncludingGravityX" [y]="accelIncludingGravityY" [z]="accelIncludingGravityZ"></app-accelerometer-including-gravity-display> -->
 <!-- <h2>{{newX | number: '1.2-2'}} {{newY | number: '1.2-2'}}</h2> -->
 
-<button (click)="handleClientEventClick()" [class.active]="handleClientEvent">Toggle Handle Client Event</button>
+<button (click)="handleClientEventClick()" [ngClass]="{'active': (toggleClientEventHandling)}">Toggle Client Event Handling</button>
+
 <app-real-express class="real-express"></app-real-express>
 

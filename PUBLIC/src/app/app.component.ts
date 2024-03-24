@@ -3,7 +3,7 @@ import { WebsocketService } from './services/web-socket.service';
 import { ElectronService } from './services/electron.service';
 
 
-import { Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { AppState } from './core/store/app.state';
 import * as AppActions from './core/store/actions/app.actions';
 import * as AppSelectors from './core/store/selectors/app.selectors';
@@ -30,6 +30,14 @@ export class AppComponent implements OnInit, OnDestroy {
   toggleClick$!: Observable<boolean>;
   toggleMousePos$!: Observable<boolean>;
 
+  toggleRemoteClickk!: boolean;
+  toggleEventHandlingg!: boolean;
+  toggleAccelerometerr!: boolean;
+  toggleAccelerometerIncludingGravityy!: boolean;
+  toggleGyroscopee!: boolean;
+  toggleClickk!: boolean;
+  toggleMousePoss!: boolean;
+
   constructor(
     private store: Store<AppState>,
     private websocketService: WebsocketService,
@@ -41,13 +49,39 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
   ngOnInit(): void {
-    this.toggleEventHandling$ = this.store.select(state => state.toggleEventHandling);
-    this.toggleRemoteClick$ = this.store.select(state => state.toggleRemoteClick);
-    this.toggleGyroscope$ = this.store.select(state => state.toggleGyroscope);
-    this.toggleAccelerometer$ = this.store.select(state => state.toggleAccelerometer);
-    this.toggleAccelerometerIncludingGravity$ = this.store.select(state => state.toggleAccelerometerIncludingGravity);
-    this.toggleClick$ = this.store.select(state => state.toggleClick);
-    this.toggleMousePos$ = this.store.select(state => state.toggleMousePos);
+    this.store.pipe(select(AppSelectors.selectToggleEventHandling)).subscribe(toggleEventHandling => {
+      this.toggleEventHandlingg = toggleEventHandling;
+    });
+    // this.toggleEventHandling$ = this.store.select(state => state.toggleEventHandling);
+
+    this.store.pipe(select(AppSelectors.selectToggleRemoteClick)).subscribe(toggleRemoteClick => {
+      this.toggleRemoteClickk = toggleRemoteClick;
+    });
+    // this.toggleRemoteClick$ = this.store.select(state => state.toggleRemoteClick);
+    this.store.pipe(select(AppSelectors.selectToggleGyroscope)).subscribe(toggleGyroscope => {
+      this.toggleGyroscopee = toggleGyroscope;
+    });
+    this.store.pipe(select(AppSelectors.selectToggleAccelerometer)).subscribe(toggleAccelerometer => {
+      this.toggleAccelerometerr = toggleAccelerometer;
+    });
+    this.store.pipe(select(AppSelectors.selectToggleAccelerometerIncludingGravity)).subscribe(toggleAccelerometerIncludingGravity => {
+      this.toggleAccelerometerIncludingGravityy = toggleAccelerometerIncludingGravity;
+    });
+    this.store.pipe(select(AppSelectors.selectToggleClick)).subscribe(toggleClick => {
+      this.toggleClickk = toggleClick;
+    });
+    this.store.pipe(select(AppSelectors.selectToggleMousePos)).subscribe(toggleMousePos => {
+      this.toggleMousePoss = toggleMousePos;
+    });
+    
+    //Old way
+    // this.toggleEventHandling$ = this.store.select(state => state.toggleEventHandling);
+    // this.toggleRemoteClick$ = this.store.select(state => state.toggleRemoteClick);
+    // this.toggleGyroscope$ = this.store.select(state => state.toggleGyroscope);
+    // this.toggleAccelerometer$ = this.store.select(state => state.toggleAccelerometer);
+    // this.toggleAccelerometerIncludingGravity$ = this.store.select(state => state.toggleAccelerometerIncludingGravity);
+    // this.toggleClick$ = this.store.select(state => state.toggleClick);
+    // this.toggleMousePos$ = this.store.select(state => state.toggleMousePos);
     this.initializeWebSocketConnection();
     this.addDeviceEventListeners();
     console.log('electronServiceAPIaa',this.electronService.isElectron )

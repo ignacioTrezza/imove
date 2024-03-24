@@ -7,6 +7,7 @@ export const toggleAccelerometerIncludingGravityHandling = createAction('[App Co
 export const toggleGyroscopeHandling = createAction('[App Component] Handle Gyroscope');
 export const toggleClickHandling = createAction('[App Component] Handle Click');
 export const toggleMousePosHandling = createAction('[App Component] Handle Mouse Pos');
+export const toggleClientEventHandling = createAction('[App Component] Handle Client Event');
 // export const handleMouseWheel = createAction('[App Component] Handle Mouse Wheel');
 // export const handleMouseMove = createAction('[App Component] Handle Mouse Move');
 // export const handleMouseDown = createAction('[App Component] Handle Mouse Down');

@@ -8,6 +8,7 @@ export interface AppState {
   toggleGyroscope: boolean;
   toggleClick: boolean;
   toggleMousePos: boolean;
+  toggleClientEventHandling: boolean;
   // Assuming FeatureState is defined elsewhere as per instructions
   featureKey: any; // Temporarily changed to 'any' until FeatureState is defined
 }

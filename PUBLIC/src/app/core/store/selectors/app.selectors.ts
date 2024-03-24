@@ -32,6 +32,10 @@ export const selectToggleMousePos = createSelector(
   selectFeature,
   (state: AppState) => state.toggleMousePos
 );
+export const selectToggleClientEventHandling = createSelector(
+  selectFeature,
+  (state: AppState) => state.toggleClientEventHandling
+);
 export const selectFeatureState = createFeatureSelector<FeatureState>('featureKey');
 
 export const selectFeatureItems = createSelector(

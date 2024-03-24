@@ -4,7 +4,7 @@ import { WebsocketService } from '../../services/web-socket.service';
 import { ElectronService } from '../../services/electron.service';
 import { AppState } from '../../core/store/app.state';
 import { Store, select } from '@ngrx/store';
-import { selectToggleEventHandling } from '../../core/store/selectors/app.selectors';
+import { selectToggleClientEventHandling } from '../../core/store/selectors/app.selectors';
 
 import * as AppActions from '../../core/store/actions/app.actions';
 
@@ -35,7 +35,7 @@ export class AnotherSubscriberComponent implements OnInit, OnDestroy {
   public newX: number = 0;
   public newY: number = 0;
   public newZ: number = 0;
-  public handleClientEvent: boolean = false;
+  public toggleClientEventHandling: boolean = false;
   constructor(
     private store: Store<AppState>,
     private websocketService: WebsocketService,
@@ -43,8 +43,8 @@ export class AnotherSubscriberComponent implements OnInit, OnDestroy {
     ) {}
 
   ngOnInit(): void {
-    this.store.pipe(select(selectToggleEventHandling)).subscribe(enableEventHandling => {
-      this.handleClientEvent = enableEventHandling;
+    this.store.pipe(select(selectToggleClientEventHandling)).subscribe(toggleClientEventHandling => {
+      this.toggleClientEventHandling = toggleClientEventHandling;
     });
     this.accelSubscription = this.websocketService.accelerometerData.subscribe(({ x, y, z }) => {
       console.log(`Accelerometer: x=${x}, y=${y}, z=${z}`);
@@ -81,9 +81,8 @@ export class AnotherSubscriberComponent implements OnInit, OnDestroy {
   
   handleClientEventClick(): void {
     if (this.electronService.isElectron) {
-      this.handleClientEvent = !this.handleClientEvent;
-      this.store.dispatch(AppActions.toggleEventHandling());
-      this.websocketService.emitHandleClientEvent(this.handleClientEvent); // Emit true when the button is clicked
+      this.store.dispatch(AppActions.toggleClientEventHandling());
+      // this.websocketService.emitHandleClientEvent(this.handleClientEvent); // Emit true when the button is clicked
     }
   }
 

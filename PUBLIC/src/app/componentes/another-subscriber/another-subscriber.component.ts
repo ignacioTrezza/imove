@@ -43,9 +43,11 @@ export class AnotherSubscriberComponent implements OnInit, OnDestroy {
     ) {}
 
   ngOnInit(): void {
+    if(this.electronService.isElectron){
     this.store.pipe(select(selectToggleClientEventHandling)).subscribe(toggleClientEventHandling => {
       this.toggleClientEventHandling = toggleClientEventHandling;
     });
+    if(this.toggleClientEventHandling){
     this.accelSubscription = this.websocketService.accelerometerData.subscribe(({ x, y, z }) => {
       console.log(`Accelerometer: x=${x}, y=${y}, z=${z}`);
       this.accelX = x;
@@ -68,23 +70,17 @@ export class AnotherSubscriberComponent implements OnInit, OnDestroy {
       this.gyroGamma = gamma;
       // Handle gyroscope data
     });
-
     this.accelIncludingGravitySubscription = this.websocketService.accelerometerIncludingGravityData.subscribe(({ x, y, z }) => {
       console.log(`Accelerometer Including Gravity: x=${x}, y=${y}, z=${z}`);
       this.accelIncludingGravityX = x;
       this.accelIncludingGravityY = y;
       this.accelIncludingGravityZ = z;
-   
-
     })
   }
-  
-  handleClientEventClick(): void {
-    if (this.electronService.isElectron) {
-      this.store.dispatch(AppActions.toggleClientEventHandling());
-      // this.websocketService.emitHandleClientEvent(this.handleClientEvent); // Emit true when the button is clicked
-    }
   }
+  }
+  
+
 
   moveCursorBasedOnAcceleration(currentX: number, currentY: number, x:number, y:number, z:number): void {
     if (this.electronService.isElectron) {
@@ -104,11 +100,18 @@ export class AnotherSubscriberComponent implements OnInit, OnDestroy {
         this.websocketService.emitProcessedPointerData(this.newX, this.newY, this.newZ);
     }
   };
-
+  handleClientEventClick(): void {
+    if (this.electronService.isElectron) {
+      this.store.dispatch(AppActions.toggleClientEventHandling());
+      // this.websocketService.emitHandleClientEvent(this.handleClientEvent); // Emit true when the button is clicked
+    }
+  }
   ngOnDestroy(): void {
+    if(this.electronService.isElectron){
     this.accelSubscription.unsubscribe();
     this.gyroSubscription.unsubscribe();
     this.accelIncludingGravitySubscription.unsubscribe();
     this.processedPointerSubscription.unsubscribe();
   }
+}
 }

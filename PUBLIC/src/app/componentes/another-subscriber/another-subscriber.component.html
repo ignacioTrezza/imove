@@ -5,5 +5,5 @@
 
 <button (click)="handleClientEventClick()" [ngClass]="{'active': (toggleClientEventHandling)}">Toggle Client Event Handling</button>
 
-<app-real-express class="real-express"></app-real-express>
+<app-real-express *ngIf="toggleClientEventHandling" class="real-express"></app-real-express>
 

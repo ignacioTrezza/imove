@@ -1,4 +1,12 @@
 <div class="data-container">
-  <!-- Container for Three.js Scene -->
+  <div class="button-container">
+    <button (click)="setMode('cubeRotation')" [ngClass]="{'active': (currentMode === 'cubeRotation')}">Cube Rotation</button>
+    <button (click)="setMode('cubePosition')" [ngClass]="{'active': (currentMode === 'cubePosition')}">Cube Position</button>
+    <button (click)="setMode('sceneRotation')" [ngClass]="{'active': (currentMode === 'sceneRotation')}">Scene Rotation</button>
+    <button (click)="setMode('scenePosition')" [ngClass]="{'active': (currentMode === 'scenePosition')}">Scene Position</button>
+    <button (click)="setMode('cameraRotation')" [ngClass]="{'active': (currentMode === 'cameraRotation')}">Camera Rotation</button>
+    <button (click)="setMode('cameraPosition')" [ngClass]="{'active': (currentMode === 'cameraPosition')}">Camera Position</button>
+  </div>
   <div id="threejs-container" style="background-color: #643f3f;display: flex;"></div>
+
 </div>

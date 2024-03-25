@@ -7,7 +7,6 @@ import { Store, select } from '@ngrx/store';
 import { AppState } from './core/store/app.state';
 import * as AppActions from './core/store/actions/app.actions';
 import * as AppSelectors from './core/store/selectors/app.selectors';
-import { Observable } from 'rxjs';
 
 
 @Component({
@@ -37,6 +36,7 @@ export class AppComponent implements OnInit, OnDestroy {
   toggleGyroscopee!: boolean;
   toggleClickk!: boolean;
   toggleMousePoss!: boolean;
+  toggleClientEventHandlingg!: boolean;
 
   constructor(
     private store: Store<AppState>,
@@ -49,15 +49,15 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
   ngOnInit(): void {
+    
+    this.store.pipe(select(AppSelectors.selectToggleRemoteClick)).subscribe(toggleRemoteClick => {
+      this.toggleRemoteClickk = toggleRemoteClick;
+          
+    });
     this.store.pipe(select(AppSelectors.selectToggleEventHandling)).subscribe(toggleEventHandling => {
       this.toggleEventHandlingg = toggleEventHandling;
     });
-    // this.toggleEventHandling$ = this.store.select(state => state.toggleEventHandling);
-
-    this.store.pipe(select(AppSelectors.selectToggleRemoteClick)).subscribe(toggleRemoteClick => {
-      this.toggleRemoteClickk = toggleRemoteClick;
-    });
-    // this.toggleRemoteClick$ = this.store.select(state => state.toggleRemoteClick);
+    
     this.store.pipe(select(AppSelectors.selectToggleGyroscope)).subscribe(toggleGyroscope => {
       this.toggleGyroscopee = toggleGyroscope;
     });
@@ -73,25 +73,18 @@ export class AppComponent implements OnInit, OnDestroy {
     this.store.pipe(select(AppSelectors.selectToggleMousePos)).subscribe(toggleMousePos => {
       this.toggleMousePoss = toggleMousePos;
     });
-    
-    //Old way
-    // this.toggleEventHandling$ = this.store.select(state => state.toggleEventHandling);
-    // this.toggleRemoteClick$ = this.store.select(state => state.toggleRemoteClick);
-    // this.toggleGyroscope$ = this.store.select(state => state.toggleGyroscope);
-    // this.toggleAccelerometer$ = this.store.select(state => state.toggleAccelerometer);
-    // this.toggleAccelerometerIncludingGravity$ = this.store.select(state => state.toggleAccelerometerIncludingGravity);
-    // this.toggleClick$ = this.store.select(state => state.toggleClick);
-    // this.toggleMousePos$ = this.store.select(state => state.toggleMousePos);
+    this.store.pipe(select(AppSelectors.selectToggleClientEventHandling)).subscribe(toggleClientEventHandling => {
+      this.toggleClientEventHandlingg = toggleClientEventHandling;
+    });
+
     this.initializeWebSocketConnection();
     this.addDeviceEventListeners();
-    console.log('electronServiceAPIaa',this.electronService.isElectron )
+
     if(this.electronService.isElectron){
-      console.log('electronServiceAPI',this.electronService.isElectron )
-      this.websocketService.messages$.subscribe((message) => {
-        
+
+      this.websocketService.messages$.subscribe((message) => {        
           switch (message.tipo) {
-            case 'message': if(message.message) console.log(`Message: ${message.message}`)
-              
+            case 'message': if(message.message) console.log(`Message: ${message.message}`)              
               break;
       
           case 'MousePos':  if (this.toggleMousePoss && message.x && message.y) {
@@ -99,10 +92,9 @@ export class AppComponent implements OnInit, OnDestroy {
               if (this.electronService.isElectron) {
                 this.electronService.electronAPI.moveCursorTo(message.x, message.y);
               } else {
-                this.websocketService.emitProcessedPointerData(message.x, message.y, 0); // Z is not used for MousePos
+                // this.websocketService.emitProcessedPointerData(message.x, message.y, 0); // Z is not used for MousePos
               }
-            }
-              
+            }              
               break;
 
           case 'Click': if (this.toggleClickk && message.x && message.y) {
@@ -117,18 +109,18 @@ export class AppComponent implements OnInit, OnDestroy {
             }
           }
               break;
-          case 'Gyroscope': if (this.toggleGyroscopee && message.alpha && message.beta && message.gamma) {
+
+          case 'Gyroscope': if (this.toggleGyroscopee && this.toggleMousePoss && message.alpha && message.beta && message.gamma) {
             console.log(`Gyroscope data: alpha=${message.alpha}, beta=${message.beta}, gamma=${message.gamma}`);
             if(this.electronService.isElectron){
             this.electronService.electronAPI.moveCursorTo(message.alpha! , message.gamma!)
             } else {
                 // this.websocketService.emitGyroscopeData(message.alpha, message.beta, message.gamma);
             }
-          }
-              
+          }            
               break;
                
-          case 'Accelerometer': if (this.toggleAccelerometerr && message.x && message.y && message.z) {
+          case 'Accelerometer': if (this.toggleAccelerometerr && this.toggleMousePoss && message.x && message.y && message.z) {
             console.log(`Accelerometer data: X=${message.x}, Y=${message.y}, Z=${message.z}`);
             if(this.electronService.isElectron){
               this.electronService.electronAPI.moveCursorTo(message.x! , message.y!);  
@@ -136,11 +128,10 @@ export class AppComponent implements OnInit, OnDestroy {
               //devolver al STORE
                 // this.websocketService.emitAccelerometerData(message.x, message.y, message.z);
             }
-          }
-              
+          }              
               break;
 
-          case 'AccelerometerIncludingGravity':   if (this.toggleAccelerometerIncludingGravityy && message.x && message.y && message.z) {
+          case 'AccelerometerIncludingGravity':   if (this.toggleAccelerometerIncludingGravityy && this.toggleMousePoss && message.x && message.y && message.z) {
             console.log('ACELERGRAV:', message.x, message.y, message.z );
             if(this.electronService.isElectron){
               this.electronService.electronAPI.moveCursorTo(message.x, message.y);  
@@ -148,13 +139,11 @@ export class AppComponent implements OnInit, OnDestroy {
             } else {
                 // this.websocketService.emitAccelerometerIncludingGravityData(message.x, message.y, message.z);
             }
-          }
-              
+          }              
               break;
                             
           default: 
-              break;
-          
+              break;          
          }
      
       });
@@ -206,6 +195,7 @@ export class AppComponent implements OnInit, OnDestroy {
   public toggleAccelerometerHandling(): void {
     // this.handleAccelerometer$ = !this.handleAccelerometer$;
     this.store.dispatch(AppActions.toggleAccelerometerHandling());
+  
     // Add logic to enable/disable accelerometer event handling
   }
   public toggleAccelerometerIncludingGravityHandling(): void {
@@ -224,8 +214,12 @@ export class AppComponent implements OnInit, OnDestroy {
     // this.handleMousePos$ = !this.handleMousePos$;
     this.store.dispatch(AppActions.toggleMousePosHandling());
   }
-
-
+  public toggleClientEventHandling(): void {
+    if (this.electronService.isElectron) {
+      this.store.dispatch(AppActions.toggleClientEventHandling());
+      // this.websocketService.emitHandleClientEvent(this.handleClientEvent); // Emit true when the button is clicked
+    }
+  }
 
 
   addDeviceEventListeners(): void {
@@ -276,53 +270,55 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   handleMotion(event: DeviceMotionEvent): void {
+
     if(!this.electronService.isElectron){
-    if (event.accelerationIncludingGravity && this.toggleAccelerometerIncludingGravityy) {
-      const payload = {
-        tipo: 'AccelerometerIncludingGravity',
-        x: event.accelerationIncludingGravity.x,
-        y: event.accelerationIncludingGravity.y,
-        z: event.accelerationIncludingGravity.z
-      };
-      this.websocketService.sendMessage(payload);
-      this.websocketService.emitAccelerometerIncludingGravityData(event.accelerationIncludingGravity.x!, event.accelerationIncludingGravity.y!, event.accelerationIncludingGravity.z!);
-      console.log('accelerationGRAVITY' ,event.accelerationIncludingGravity)
-    } else if (event.acceleration && this.toggleAccelerometerr) {
-      const payload = {
-        tipo: 'Accelerometer',
-        x: event.acceleration.x,
-        y: event.acceleration.y,
-        z: event.acceleration.z
-      };
-      this.websocketService.sendMessage(payload);
-      this.websocketService.emitAccelerometerData(event.acceleration.x!, event.acceleration.y!, event.acceleration.z!);
+
+      if (event.accelerationIncludingGravity && this.toggleAccelerometerIncludingGravityy) {
+        const payload = {
+          tipo: 'AccelerometerIncludingGravity',
+          x: event.accelerationIncludingGravity.x,
+          y: event.accelerationIncludingGravity.y,
+          z: event.accelerationIncludingGravity.z
+        };
+        this.websocketService.sendMessage(payload);
+        this.websocketService.emitAccelerometerIncludingGravityData(event.accelerationIncludingGravity.x!, event.accelerationIncludingGravity.y!, event.accelerationIncludingGravity.z!);
+        console.log('accelerationGRAVITY' ,event.accelerationIncludingGravity)
+      } else if (event.acceleration && this.toggleAccelerometerr) {
+        const payload = {
+          tipo: 'Accelerometer',
+          x: event.acceleration.x,
+          y: event.acceleration.y,
+          z: event.acceleration.z
+        };
+        this.websocketService.sendMessage(payload);
+        this.websocketService.emitAccelerometerData(event.acceleration.x!, event.acceleration.y!, event.acceleration.z!);
+      }
     }
-  }
   }
 
   @HostListener('document:mousemove', ['$event'])
   onMouseMove(event: MouseEvent): void {
     if(!this.electronService.isElectron){
-    event.preventDefault(); // Prevent any default action.
-    if (this.toggleMousePoss) {
-      const payload = { tipo: 'MousePos', x: event.clientX, y: event.clientY };
-      this.websocketService.sendMessage(payload);
+      event.preventDefault(); // Prevent any default action.
+      if (this.toggleMousePoss) {
+        const payload = { tipo: 'MousePos', x: event.clientX, y: event.clientY };
+        this.websocketService.sendMessage(payload);
+      }
     }
-  }
   }
   
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent): void {
     if(!this.electronService.isElectron){
-    event.preventDefault(); // Prevent any default action.
-    if (this.toggleClickk) {
-      const payload = { tipo: 'Click', x: event.clientX, y: event.clientY };
-      this.websocketService.sendMessage(payload);
-      if (this.toggleRemoteClickk) {
-        this.websocketService.emitClick(event.clientX, event.clientY);
+      event.preventDefault(); // Prevent any default action.
+      if (this.toggleClickk) {
+        const payload = { tipo: 'Click', x: event.clientX, y: event.clientY };
+        this.websocketService.sendMessage(payload);
+        if (this.toggleRemoteClickk) {
+          this.websocketService.emitClick(event.clientX, event.clientY);
+        }
       }
     }
-  }
   }
  
 }

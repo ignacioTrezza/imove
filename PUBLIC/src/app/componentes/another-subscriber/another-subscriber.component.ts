@@ -83,7 +83,8 @@ export class AnotherSubscriberComponent implements OnInit, OnDestroy {
 
 
   moveCursorBasedOnAcceleration(currentX: number, currentY: number, x:number, y:number, z:number): void {
-    if (this.electronService.isElectron) {
+    if (
+      this.electronService.isElectron) {
       // Normalize acceleration data to a range that suits your screen size and preferences
       const sensitivity = 10; // Adjust this based on your needs
       let deltaX = x * sensitivity;

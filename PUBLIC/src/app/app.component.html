@@ -18,12 +18,18 @@
 <div id="gyroscopeData"></div> -->
 
 <!-- Buttons to toggle event handling -->
-<button (click)="toggleRemoteClick()"  [ngClass]="{'active': (toggleRemoteClickk)}">Toggle Remotely Click</button>
-<button (click)="toggleEventHandling()" [ngClass]="{'active': (toggleEventHandlingg)}">Toggle Event Handling</button>
+<button disabled (click)="toggleRemoteClick()"  [ngClass]="{'active': (toggleRemoteClickk)}">Toggle Remotely Click</button>
+<button  (click)="toggleEventHandling()" [ngClass]="{'active': (toggleEventHandlingg)}">Toggle Event Handling</button>
 <button (click)="toggleAccelerometerHandling()" [ngClass]="{'active': (toggleAccelerometerr)}">Toggle Accelerometer Handling</button>
 <button (click)="toggleAccelerometerIncludingGravityHandling()" [ngClass]="{'active': (toggleAccelerometerIncludingGravityy)}">Toggle Accelerometer Including Gravity Handling</button>
 <button (click)="toggleGyroscopeHandling()" [ngClass]="{'active': (toggleGyroscopee)}">Toggle Gyroscope Handling</button>
 <button (click)="toggleClickHandling()" [ngClass]="{'active': (toggleClickk)}">Toggle Click Handling</button>
 <button (click)="toggleMousePosHandling()" [ngClass]="{'active': (toggleMousePoss)}">Toggle Mouse Position Handling</button>
-<app-another-subscriber class="accomodation"></app-another-subscriber>
+<button (click)="toggleClientEventHandling()" [ngClass]="{'active': (toggleClientEventHandlingg)}">Toggle Client Event Handling</button>
+
+<!-- <app-another-subscriber class="accomodation"></app-another-subscriber> -->
+
+<app-real-express *ngIf="toggleClientEventHandlingg" class="real-express"></app-real-express>
+
+
 

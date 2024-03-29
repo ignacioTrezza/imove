@@ -20,38 +20,38 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
   currentMode: 'cubeRotation' | 'cubePosition' | 'sceneRotation' | 'scenePosition' | 'cameraRotation' | 'cameraPosition' | null = 'cubeRotation';
 
   private prevAccelIncludingGravityX: number = 0;
-  private prevAccelIncludingGravityY: number = 0; 
+  private prevAccelIncludingGravityY: number = 0;
 
-  toggleRemoteClick$ = new BehaviorSubject<boolean>(false);
-  toggleEventHandling$ = new BehaviorSubject<boolean>(false);
-  toggleAccelerometer$ = new BehaviorSubject<boolean>(false);
-  toggleAccelerometerIncludingGravity$ = new BehaviorSubject<boolean>(false);
-  toggleGyroscope$ = new BehaviorSubject<boolean>(false);
-  toggleClick$ = new BehaviorSubject<boolean>(false);
-  toggleMousePos$ = new BehaviorSubject<boolean>(false);
-  toggleClientEventHandling$ = new BehaviorSubject<boolean>(false);
+  toggleRemoteClick: boolean = false;
+  toggleEventHandling: boolean = false;
+  toggleAccelerometer: boolean = false;
+  toggleAccelerometerIncludingGravity: boolean = false;
+  toggleGyroscope: boolean = false;
+  toggleClick: boolean = false;
+  toggleMousePos: boolean = false;
+  toggleClientEventHandling: boolean = false
 
   public accelSubscription!: Subscription;
   public gyroSubscription!: Subscription;
   public accelIncludingGravitySubscription!: Subscription;
   public processedPointerSubscription!: Subscription;
 
-public gyroAlpha$ = new BehaviorSubject<number>(0);
-public gyroBeta$ = new BehaviorSubject<number>(0);
-public gyroGamma$ = new BehaviorSubject<number>(0);
+  public gyroAlpha$ = new BehaviorSubject<number>(0);
+  public gyroBeta$ = new BehaviorSubject<number>(0);
+  public gyroGamma$ = new BehaviorSubject<number>(0);
 
-public accelX$ = new BehaviorSubject<number>(0);
-public accelY$ = new BehaviorSubject<number>(0);
-public accelZ$ = new BehaviorSubject<number>(0);
+  public accelX$ = new BehaviorSubject<number>(0);
+  public accelY$ = new BehaviorSubject<number>(0);
+  public accelZ$ = new BehaviorSubject<number>(0);
 
-public accelIncludingGravityX$ = new BehaviorSubject<number>(0);
-public accelIncludingGravityY$ = new BehaviorSubject<number>(0);
-public accelIncludingGravityZ$ = new BehaviorSubject<number>(0);
+  public accelIncludingGravityX$ = new BehaviorSubject<number>(0);
+  public accelIncludingGravityY$ = new BehaviorSubject<number>(0);
+  public accelIncludingGravityZ$ = new BehaviorSubject<number>(0);
 
-public newX$ = new BehaviorSubject<number>(0);
-public newY$ = new BehaviorSubject<number>(0);
-public newZ$ = new BehaviorSubject<number>(0);
-// public toggleClientEventHandling$ = new BehaviorSubject<boolean>(false);
+  public newX$ = new BehaviorSubject<number>(0);
+  public newY$ = new BehaviorSubject<number>(0);
+  public newZ$ = new BehaviorSubject<number>(0);
+  // public toggleClientEventHandling$ = new BehaviorSubject<boolean>(false);
 
 
 
@@ -82,145 +82,121 @@ public newZ$ = new BehaviorSubject<number>(0);
 
   initializeStoreEvents() {
     if (this.electronService.isElectron) {
-      this.store.pipe(select(AppSelectors.selectToggleRemoteClick)).subscribe(toggleRemoteClick => {
-        this.toggleRemoteClick$.next(toggleRemoteClick);
 
+      this.store.pipe(select(AppSelectors.selectToggleRemoteClick)).subscribe(toggleRemoteClick => {
+        this.toggleRemoteClick = toggleRemoteClick;
+        this.handleClientEvent(this.toggleRemoteClick);
       });
 
       this.store.pipe(select(AppSelectors.selectToggleEventHandling)).subscribe(toggleEventHandling => {
-        this.toggleEventHandling$.next(toggleEventHandling);
+        this.toggleEventHandling = toggleEventHandling;
+        if (this.toggleEventHandling === true) {
+          console.log('EVENT HANDLING11', this.toggleEventHandling);
+
+          let parsedData = { x: 0, y: 0, z: 0 };
+
+          if (this.toggleAccelerometer === true) {
+            parsedData = { ...parsedData, x: this.accelX$.value, y: this.accelY$.value, z: this.accelZ$.value }
+          }
+          if (this.toggleAccelerometerIncludingGravity === true) {
+            parsedData = { ...parsedData, x: this.accelIncludingGravityX$.value, y: this.accelIncludingGravityY$.value, z: this.accelIncludingGravityZ$.value }
+          }
+          if (this.toggleGyroscope === true) {
+            parsedData = { ...parsedData, x: this.gyroAlpha$.value, y: this.gyroBeta$.value, z: this.gyroGamma$.value }
+          }
+          console.log('VALUE:', this.cube.position.x, this.cube.position.y, this.cube.position.z);
+
+          if (parsedData.x !== null && parsedData.y !== null && parsedData.z !== null) {
+
+            const deltaX = parsedData.x - this.prevAccelIncludingGravityX;
+            const deltaY = parsedData.y - this.prevAccelIncludingGravityY;
+
+            this.switchMode(this.currentMode, deltaX, deltaY);
+
+            this.prevAccelIncludingGravityX = parsedData.x;
+            this.prevAccelIncludingGravityY = parsedData.y;
+
+          } else {
+            console.log('XYZ:', parsedData.x, parsedData.y, parsedData.z, this.cube.position.x, this.cube.position.y, this.cube.position.z);
+          }
+        }
       });
 
       this.store.pipe(select(AppSelectors.selectToggleGyroscope)).subscribe(toggleGyroscope => {
-        this.toggleGyroscope$.next(toggleGyroscope);
+        this.toggleGyroscope = toggleGyroscope;
+        if (this.toggleGyroscope === true) {
+          this.gyroSubscription = this.websocketService.gyroscopeData.subscribe(({ alpha, beta, gamma }) => {
+            console.log(`Gyroscope: alpha=${alpha}, beta=${beta}, gamma=${gamma}`);
+            this.gyroAlpha$.next(alpha);
+            this.gyroBeta$.next(beta);
+            this.gyroGamma$.next(gamma);
+            // Handle gyroscope data
+          });
+        } else {
+          if(this.gyroSubscription){
+            this.gyroSubscription.unsubscribe();
+          }
+        }
       });
+
       this.store.pipe(select(AppSelectors.selectToggleAccelerometer)).subscribe(toggleAccelerometer => {
-        this.toggleAccelerometer$.next(toggleAccelerometer);
+        this.toggleAccelerometer = toggleAccelerometer;
+        if (this.toggleAccelerometer === true) {
+          this.accelSubscription = this.websocketService.accelerometerData.subscribe(({ x, y, z }) => {
+            console.log(`Accelerometer: x=${x}, y=${y}, z=${z} `);
+            this.accelX$.next(x);
+            this.accelY$.next(y);
+            this.accelZ$.next(z);
+            // Handle accelerometer data
+          });
+        } else {
+          if(this.accelSubscription){
+            this.accelSubscription.unsubscribe();
+          }
+        }
       });
+
       this.store.pipe(select(AppSelectors.selectToggleAccelerometerIncludingGravity)).subscribe(toggleAccelerometerIncludingGravity => {
-        this.toggleAccelerometerIncludingGravity$.next(toggleAccelerometerIncludingGravity);
+        this.toggleAccelerometerIncludingGravity = toggleAccelerometerIncludingGravity;
+        if (this.toggleAccelerometerIncludingGravity === true) {
+          this.accelIncludingGravitySubscription = this.websocketService.accelerometerIncludingGravityData
+            .subscribe(({ x, y, z }) => {
+              console.log(`Accelerometer Including Gravity: x=${x}, y=${y}, z=${z}`);
+              this.accelIncludingGravityX$.next(x);
+              this.accelIncludingGravityY$.next(y);
+              this.accelIncludingGravityZ$.next(z);
+            })
+        } else {
+          if(this.accelIncludingGravitySubscription){
+            this.accelIncludingGravitySubscription.unsubscribe();
+          }
+        }
       });
+
       this.store.pipe(select(AppSelectors.selectToggleClick)).subscribe(toggleClick => {
-        this.toggleClick$.next(toggleClick);
+        this.toggleClick = toggleClick;
       });
       this.store.pipe(select(AppSelectors.selectToggleMousePos)).subscribe(toggleMousePos => {
-        this.toggleMousePos$.next(toggleMousePos);
+        this.toggleMousePos = toggleMousePos;
+        this.processedPointerSubscription = this.websocketService.processedPointerData.subscribe(({ x, y, z }) => {
+          //     console.log(`Processed Pointer: x=${x}, y=${y}, z=${z}`);
+          //     this.newX = x;
+          //     this.newY = y;
+          //     this.newZ = z;
+          //     // Handle processed pointer data
+          //   });
+          // } else {
+          //   this.processedPointerSubscription.unsubscribe();
+          // }
       });
       this.store.pipe(select(AppSelectors.selectToggleClientEventHandling)).subscribe(toggleClientEventHandling => {
-        this.toggleClientEventHandling$.next(toggleClientEventHandling);
+        this.toggleClientEventHandling = toggleClientEventHandling;
       });
       this.store.pipe(select(AppSelectors.selectSetMovementMode)).subscribe(setMovementMode => {
         this.currentMode = setMovementMode;
       });
-      this.toggleRemoteClick$.pipe(takeUntil(this.destroy$)).subscribe(value => {
-        if (this.toggleRemoteClick$.value) {
-          console.log('REMOTE CLICK ACTIVADO', value);
-          this.handleClientEvent();
-        } else {
-          console.log('REMOTE CLICK DESACTIVADO', value);
-          document.removeEventListener('keydown', this.handleKeyDown.bind(this));
-          document.removeEventListener('mouseup', this.mouseUpListener);
-          document.removeEventListener('mousedown', this.mouseUpListener);
-          document.removeEventListener('mousemove', this.mouseUpListener);
-        }
-      });
-      this.toggleEventHandling$.pipe(takeUntil(this.destroy$)).subscribe(value => {
-        console.log('EVENT HANDLING', value);
-
-      if (this.toggleEventHandling$.value) {
-        console.log('EVENT HANDLING11', value, this.toggleEventHandling$.value);
-
-        let parsedData = { x: 0, y: 0, z: 0 };
-
-        if (this.toggleAccelerometer$.value) {
-          parsedData = { ...parsedData, x: this.accelX$.value, y: this.accelY$.value, z: this.accelZ$.value }
-        }
-        if (this.toggleAccelerometerIncludingGravity$.value) {
-          parsedData = { ...parsedData, x: this.accelIncludingGravityX$.value, y: this.accelIncludingGravityY$.value, z: this.accelIncludingGravityZ$.value }
-        }
-        if (this.toggleGyroscope$.value) {
-          parsedData = { ...parsedData, x: this.gyroAlpha$.value, y: this.gyroBeta$.value, z: this.gyroGamma$.value }
-        }
-        console.log('VALUE:', value, this.cube.position.x, this.cube.position.y, this.cube.position.z);
-
-        if (parsedData.x !== null && parsedData.y !== null && parsedData.z !== null) {
-
-          const deltaX = parsedData.x - this.prevAccelIncludingGravityX;
-          const deltaY = parsedData.y - this.prevAccelIncludingGravityY;
-
-          this.switchMode(this.currentMode, deltaX, deltaY);
-
-          this.prevAccelIncludingGravityX = parsedData.x;
-          this.prevAccelIncludingGravityY = parsedData.y;
-
-        } else {
-          console.log('XYZ:', parsedData.x, parsedData.y, parsedData.z, this.cube.position.x, this.cube.position.y, this.cube.position.z);
-        }
-      }
-    });
-      if (this.toggleAccelerometer$.value) {
-        this.accelSubscription = this.websocketService.accelerometerData.subscribe(({ x, y, z }) => {
-          console.log(`Accelerometer: x=${x}, y=${y}, z=${z} `);
-          this.accelX$.next(x);
-          this.accelY$.next(y);
-          this.accelZ$.next(z);
-          // Handle accelerometer data
-        });
-      } else {
-        // this.accelSubscription.unsubscribe();
-      }
-
-
-      // if (this.toggleMousePoss) {
-      //   this.processedPointerSubscription = this.websocketService.processedPointerData.subscribe(({ x, y, z }) => {
-      //     console.log(`Processed Pointer: x=${x}, y=${y}, z=${z}`);
-      //     this.newX = x;
-      //     this.newY = y;
-      //     this.newZ = z;
-      //     // Handle processed pointer data
-      //   });
-      // } else {
-      //   this.processedPointerSubscription.unsubscribe();
-      // }
-
-      if (this.toggleGyroscope$.value) {
-        this.gyroSubscription = this.websocketService.gyroscopeData.subscribe(({ alpha, beta, gamma }) => {
-          console.log(`Gyroscope: alpha=${alpha}, beta=${beta}, gamma=${gamma}`);
-          this.gyroAlpha$.next(alpha);
-          this.gyroBeta$.next(beta);
-          this.gyroGamma$.next(gamma);
-          // Handle gyroscope data
-        });
-      } else {
-        // this.gyroSubscription.unsubscribe();
-      }
-
-      if (this.toggleAccelerometerIncludingGravity$.value) {
-        this.accelIncludingGravitySubscription = this.websocketService.accelerometerIncludingGravityData
-          .subscribe(({ x, y, z }) => {
-            console.log(`Accelerometer Including Gravity: x=${x}, y=${y}, z=${z}`);
-            this.accelIncludingGravityX$.next(x);
-            this.accelIncludingGravityY$.next(y);
-            this.accelIncludingGravityZ$.next(z);
-          })
-      } else {
-        // this.accelIncludingGravitySubscription.unsubscribe();
-      }
     }
-
-
-    this.websocketService.handleClientEvent.subscribe((value) => {
-      if (value) {
-        if (this.toggleRemoteClick$.value === true) {
-          this.handleClientEvent();
-        } else {
-          // document.removeEventListener('keydown', this.handleKeyDown.bind(this));
-          // document.removeEventListener('mouseup', this.mouseUpListener);
-          // document.removeEventListener('mousedown', this.mouseUpListener);
-          // document.removeEventListener('mousemove', this.mouseUpListener);
-        }
-      }
-    });
+      )}
   }
   // moveCursorBasedOnAcceleration(currentX: number, currentY: number, x: number, y: number, z: number): void {
   //   if (
@@ -250,8 +226,8 @@ public newZ$ = new BehaviorSubject<number>(0);
   ngOnDestroy(): void {
     document.removeEventListener('keydown', this.handleKeyDown.bind(this));
     document.removeEventListener('mouseup', this.mouseUpListener);
-    document.removeEventListener('mousedown', this.mouseUpListener);
-    document.removeEventListener('mousemove', this.mouseUpListener);
+    document.removeEventListener('mousedown', this.mouseDownListener);
+    document.removeEventListener('mousemove', this.mouseMoveListener);
     // this.accelSubscription.unsubscribe();
     // this.gyroSubscription.unsubscribe();
     // this.accelIncludingGravitySubscription.unsubscribe();
@@ -312,34 +288,53 @@ public newZ$ = new BehaviorSubject<number>(0);
   private handleKeyDown(event: KeyboardEvent): void {
     console.log(`Key pressed: ${event.key}`);
   }
-  private mouseUpListener = () => {
+  private mouseUpListener = (event: MouseEvent) => {
     this.isDragging = false;
   };
+  private mouseDownListener = (event: MouseEvent) => {
+    console.log('mousedown', event);
+    this.isDragging = true;
+    this.previousX = event.clientX;
+    this.previousY = event.clientY;
+    document.addEventListener('mouseup', this.mouseUpListener);
 
-  private handleClientEvent(): void {
-    document.getElementById('threejs-container')!.addEventListener('mousedown', (event) => {
-      console.log('mousedown', event);
-      this.isDragging = true;
+  };
+  private mouseMoveListener = (event: MouseEvent) => {
+    
+    if (this.isDragging) {
+      const deltaX = event.clientX - this.previousX;
+      const deltaY = event.clientY - this.previousY;
+
+      this.switchMode(this.currentMode, deltaX, deltaY);
+
       this.previousX = event.clientX;
       this.previousY = event.clientY;
-      document.addEventListener('mouseup', this.mouseUpListener);
-    });
-    document.addEventListener('mousemove', (event) => {
-      if (this.isDragging) {
-        const deltaX = event.clientX - this.previousX;
-        const deltaY = event.clientY - this.previousY;
 
+    }
+    
+  };
+  private handleClientEvent(status: boolean): void {
 
-        this.switchMode(this.currentMode, deltaX, deltaY);
+    if (status == true) {
+      console.log('REMOTE CLICK ACTIVADO');
 
-        this.previousX = event.clientX;
-        this.previousY = event.clientY;
+      document.getElementById('threejs-container')!.addEventListener('mousedown', this.mouseDownListener);
+      document.addEventListener('mousemove',this.mouseMoveListener);
+      document.getElementById('threejs-container')!.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
+      });
+    } else {
+      console.log('REMOTE CLICK DESACTIVADO');
+      document.removeEventListener('mousedown', this.mouseDownListener);
+      document.removeEventListener('mousemove', this.mouseMoveListener); 
+      this.mouseUpListener 
+      // document.removeEventListener('keydown', this.handleKeyDown.bind(this));
+      // document.removeEventListener('mouseup', this.mouseUpListener);
+      // document.removeEventListener('mousedown', this.mouseUpListener);
+      // document.removeEventListener('mousemove', this.mouseUpListener);
+     
+    }
 
-      }
-    });
-    document.getElementById('threejs-container')!.addEventListener('contextmenu', (event) => {
-      event.preventDefault();
-    });
   }
   switchMode(currentMode: any, deltaX: number, deltaY: number) {
     switch (currentMode) {

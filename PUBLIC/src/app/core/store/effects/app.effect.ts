@@ -115,4 +115,17 @@ this.actions$.pipe(
 ),
 { dispatch: false }
 );
+setMovementMode$ = createEffect(() => 
+this.actions$.pipe(
+  ofType(AppActions.setMovementMode),
+  withLatestFrom(this.store.pipe(select(state => state.setMovementMode))),
+  tap(([action, setMovementMode]) => {
+    // this.enableRemoteClick = !toggleRemoteClick;
+    // this.websocketService.toggleEventHandling.emit(this.enableRemoteClick);
+
+  })
+),
+{ dispatch: false }
+);
 }
+

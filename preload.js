@@ -5,21 +5,21 @@ const qrcode = require('qrcode');
 contextBridge.exposeInMainWorld('electronAPI', {
   moveCursorTo: (x, y) => ipcRenderer.send('move-cursor', { x, y }),
   clickIn: (event) => ipcRenderer.send('click-mouse', event),
-  // qrMagic:()=>{ipcRenderer.on('qr-code', (event, url) => {
-  //   // Create an image element to display the QR code
-  //   const img = document.createElement('img');
-  //   img.src = url;
-  //   document.body.appendChild(img); // Assuming you want to append to the body
+
+  qrMagic:()=>{ipcRenderer.on('qr-code', (event, url) => {
+    // Create an image element to display the QR code
+    const img = document.createElement('img');
+    img.src = url;
+    document.body.appendChild(img); // Assuming you want to append to the body
  
-  // });},
-  // qrWifi: () =>{ipcRenderer.on('qr-code-wifi', (event, url) => {
-  //   const imgWifi = document.createElement('img');
-  //   imgWifi.src = url;
-  //   document.body.appendChild(imgWifi); 
-  //   })},
+  });},
+  qrWifi: () =>{ipcRenderer.on('qr-code-wifi', (event, url) => {
+    const imgWifi = document.createElement('img');
+    imgWifi.src = url;
+    document.body.appendChild(imgWifi); 
+    })},
    
-  getLocalIpAddress: () => getLocalIpAddress(),
- 
+    getLocalIpAddress: () => ipcRenderer.invoke('get-local-ip-address'), 
 }),
 
 
@@ -98,13 +98,18 @@ window.addEventListener('DOMContentLoaded', () => {
       // document.body.appendChild(img); // Assuming you want to append to the body
     }
   });
-  function generateWifiURL(ssid, password) {
-    return `WIFI:S:${ssid};T:WPA;P:${password};;`;
-  }
+  ipcRenderer.on('set-ip-address', (event, ipAddress) => {
+    // Use ipAddress to generate or update QR code
+    // Example: 
+    updateQRCode(ipAddress);
+  });
+  // function generateWifiURL(ssid, password) {
+  //   return `WIFI:S:${ssid};T:WPA;P:${password};;`;
+  // }
   // Replace 'your_ssid' and 'your_password' with actual SSID and password
-  const ssid = 'TP-Link_CDDC_5G';
-  const password = '52269189';
-  const wifiURL = generateWifiURL(ssid, password);
+  // const ssid = 'TP-Link_CDDC_5G';
+  // const password = '52269189';
+  // const wifiURL = generateWifiURL(ssid, password);
 
   // Generate QR code for the WiFi connection URL
   // qrcode.toDataURL(wifiURL, function (err, url) {
@@ -133,8 +138,8 @@ window.addEventListener('DOMContentLoaded', () => {
   //     document.body.appendChild(qrContainer); // Append the container to the body
   //   }
   // })
-  ipcRenderer.on('wifi-details', (event, details) => {
-    console.log('Received Wi-Fi details:', details);
-    // Update UI or logic based on Wi-Fi details
-  });
+  // ipcRenderer.on('wifi-details', (event, details) => {
+  //   console.log('Received Wi-Fi details:', details);
+  //   // Update UI or logic based on Wi-Fi details
+  // });
 })

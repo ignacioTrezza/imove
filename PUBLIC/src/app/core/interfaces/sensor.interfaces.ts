@@ -14,5 +14,7 @@ interface GyroscopeMessage {
   beta?: number;
   gamma?: number;
 }
+export type movementMode = 'cubeRotation' | 'cubePosition' | 'sceneRotation' | 'scenePosition' | 'cameraRotation' | 'cameraPosition' | null;
+
 
 export type SensorMessage = AccelerometerMessage | GyroscopeMessage;

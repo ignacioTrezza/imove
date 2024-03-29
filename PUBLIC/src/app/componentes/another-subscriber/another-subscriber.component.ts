@@ -109,10 +109,10 @@ export class AnotherSubscriberComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy(): void {
     if(this.electronService.isElectron){
-    this.accelSubscription.unsubscribe();
-    this.gyroSubscription.unsubscribe();
-    this.accelIncludingGravitySubscription.unsubscribe();
-    this.processedPointerSubscription.unsubscribe();
+    // this.accelSubscription.unsubscribe();
+    // this.gyroSubscription.unsubscribe();
+    // this.accelIncludingGravitySubscription.unsubscribe();
+    // this.processedPointerSubscription.unsubscribe();
   }
 }
 }

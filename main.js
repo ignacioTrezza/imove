@@ -3,13 +3,25 @@ const path = require('node:path')
 const robot = require('robotjs'); // Import robotjs
 const server = require('./server.js');
 const os = require('os'); // Import the os module
-const  {getWifiDetails}  = require('./wifi-details.js'); // Adjust the path as necessary
+// const  {getWifiDetails}  = require('./wifi-details.js'); // Adjust the path as necessary
 
 //Inicializo el servidor
 server;
-
+let mainWindow; // Define mainWindow at the top
+function getLocalIpAddress() {
+  const networkInterfaces = os.networkInterfaces();
+  for (const interfaceName in networkInterfaces) {
+    const networkInterface = networkInterfaces[interfaceName];
+    for (const interface of networkInterface) {
+      if (!interface.internal && interface.family === 'IPv4') {
+        return interface.address;
+      }
+    }
+  }
+  return '127.0.0.1'; // Fallback to localhost
+}
 const createWindow = () => {
-    const win = new BrowserWindow({
+    mainWindow = new BrowserWindow({
       width: 800,
       height: 1000,
       webPreferences: {
@@ -19,29 +31,50 @@ const createWindow = () => {
       }
     })
   
-    win.loadFile(path.join(__dirname, 'PUBLIC/dist/client/browser/index.html'));   
-     // win.loadURL('http://localhost:4200')
+    mainWindow.loadFile(path.join(__dirname, 'PUBLIC/dist/client/browser/index.html'));   
+     // mainWindow.loadURL('http://localhost:4200')
   }
   
   app.whenReady().then(() => {
-    getWifiDetails((error, details) => {
-      if (error) {
-        console.error('Failed to get Wi-Fi details:', error);
-      } else {
-        console.log('Wi-Fi Details:', details);
-        mainWindow.webContents.send('wifi-details', details);
-        // Optionally, use these details when creating the window or in other app logic
-      }
-    });
-    createWindow()
+    createWindow();
+    const localIpAddress = getLocalIpAddress();
+    console.log(`Local IP Address: ${localIpAddress}`);
+    // createWindow();
     session.defaultSession.setCertificateVerifyProc((request, callback) => {
-      if (request.hostname === '192.168.0.129') {
-        callback(0); // Bypass certificate validation
+      console.log('IPADRES', localIpAddress)
+      if (request.hostname === localIpAddress) { // Replace with your hostname
+        callback(0); // Trust the certificate
       } else {
-        callback(-2); // Use default certificate validation for other domains
+        callback(0)
+        // callback(-3); // Perform default certificate verification for other hostnames
       }
     });
-  })
+    if (mainWindow) {
+      mainWindow.webContents.on('did-finish-load', () => {
+        mainWindow.webContents.send('set-ip-address', localIpAddress);
+      });
+    }
+  });
+ 
+   
+    // getWifiDetails((error, details) => {
+    //   if (error) {
+    //     console.error('Failed to get Wi-Fi details:', error);
+    //   } else {
+    //     console.log('Wi-Fi Details:', details);
+    //     mainWindow.webContents.send('wifi-details', details);
+    //     // Optionally, use these details when creating the window or in other app logic
+    //   }
+    // });
+    // createWindow()
+    // session.defaultSession.setCertificateVerifyProc((request, callback) => {
+    //   if (request.hostname === '192.168.0.147') {
+    //     callback(0); // Bypass certificate validation
+    //   } else {
+    //     callback(-2); // Use default certificate validation for other domains
+    //   }
+    // });
+  // })
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow()
@@ -73,4 +106,6 @@ ipcMain.on('click-mouse', (event) => {
   console.log(`MouseClick detected (Event:${event})`)
   robot.mouseClick(); //{button: 'left'}  Move the cursor to the specified position
 });
-
+ipcMain.handle('get-local-ip-address', async (event) => {
+  return getLocalIpAddress() || '127.0.0.1'; // Assuming getLocalIpAddress is your function that returns the IP address
+});

@@ -36,6 +36,10 @@ export const selectToggleClientEventHandling = createSelector(
   selectFeature,
   (state: AppState) => state.toggleClientEventHandling
 );
+export const selectSetMovementMode = createSelector(
+  selectFeature,
+  (state: AppState) => state.setMovementMode
+);
 export const selectFeatureState = createFeatureSelector<FeatureState>('featureKey');
 
 export const selectFeatureItems = createSelector(

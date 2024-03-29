@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 interface ElectronAPI {
   moveCursorTo(x: number, y: number): void;
   clickIn(x: number, y: number): void;
-  getLocalIpAddress(): string;
+  getLocalIpAddress(): Promise<string>; // Changed to return a Promise<string>
   qrWifi(): void;
   qrMagic(): void;
 }

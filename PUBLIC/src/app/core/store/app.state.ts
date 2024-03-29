@@ -1,4 +1,5 @@
-import { ActionReducerMap } from '@ngrx/store';
+
+import { movementMode } from '../interfaces/sensor.interfaces';
 
 export interface AppState {
   toggleRemoteClick: boolean;
@@ -9,18 +10,10 @@ export interface AppState {
   toggleClick: boolean;
   toggleMousePos: boolean;
   toggleClientEventHandling: boolean;
-  // Assuming FeatureState is defined elsewhere as per instructions
-  featureKey: any; // Temporarily changed to 'any' until FeatureState is defined
+  setMovementMode: movementMode;
+ 
+  featureKey: any; 
 }
 export interface SensorDataState {
-    data: string; // Assuming the actual data type is a string
+    data: string;
   }
-// export const appReducers: ActionReducerMap<AppState> = {
-//   sensorData: sensorDataReducer,
-//   enableRemoteClick: enableRemoteClickReduce,
-//   enableEventHandling: enableEventHandlingReduce,
-//   handleAccelerometer: handleAccelerometerReduce,
-//   // Assuming featureReducer is defined elsewhere as per instructions
-//   featureKey: featureReducer, // Added as per Step 4 instructions
-// };
-

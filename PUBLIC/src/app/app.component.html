@@ -10,7 +10,7 @@
     <h1>Escaneá el QR con el Celular o la Tablet </h1>
 </ng-container>
 <ng-template #noElectron   >
-    <h1>Poné el celular con la pantalla hacia el cielo.</h1>
+    <h1>Poné el celular con la pantalla hacia el cielo</h1>
     <h2>Vale tocar la pantalla y hace click!</h2>
 </ng-template>
 <!-- <pre id="messages"></pre>
@@ -20,11 +20,14 @@
 <!-- Buttons to toggle event handling -->
 <button (click)="toggleRemoteClick()"  [ngClass]="{'active': (toggleRemoteClickk)}">Mover Canvas con mouse</button>
 <button (click)="toggleEventHandling()" [ngClass]="{'active': (toggleEventHandlingg)}">Mover canvas con sensores</button>
+<br>
 <button (click)="toggleAccelerometerHandling()" [ngClass]="{'active': (toggleAccelerometerr)}">Usar Accelerometer</button>
 <button (click)="toggleAccelerometerIncludingGravityHandling()" [ngClass]="{'active': (toggleAccelerometerIncludingGravityy)}">Usar Accelerometer Including Gravity</button>
 <button (click)="toggleGyroscopeHandling()" [ngClass]="{'active': (toggleGyroscopee)}">Usar Gyroscope </button>
+<br>
 <button (click)="toggleClickHandling()" [ngClass]="{'active': (toggleClickk)}">Permitir hacer click en host con cliente</button>
 <button (click)="toggleMousePosHandling()" [ngClass]="{'active': (toggleMousePoss)}">Permitir mover el cursor del host con el cliente</button>
+<br>
 <button (click)="toggleClientEventHandling()" [ngClass]="{'active': (toggleClientEventHandlingg)}">Mostrar CANVAS</button>
 
 <!-- <app-another-subscriber class="accomodation"></app-another-subscriber> -->

@@ -12,8 +12,8 @@ export const initialState: AppState = {
   toggleGyroscope: false,
   toggleClick: false,
   toggleMousePos: false,
-  toggleClientEventHandling: false
-  // Initialize other flags as needed
+  toggleClientEventHandling: false,
+  setMovementMode: 'cubeRotation'
 };
 
 export const appReducer = createReducer(
@@ -25,7 +25,8 @@ export const appReducer = createReducer(
   on(AppActions.toggleGyroscopeHandling,(state) =>({...state, toggleGyroscope: !state.toggleGyroscope})),
   on(AppActions.toggleClickHandling,(state) =>({...state, toggleClick: !state.toggleClick})),
   on(AppActions.toggleMousePosHandling,(state) =>({...state, toggleMousePos: !state.toggleMousePos})),
-  on(AppActions.toggleClientEventHandling,(state) =>({...state, toggleClientEventHandling: !state.toggleClientEventHandling}))
+  on(AppActions.toggleClientEventHandling,(state) =>({...state, toggleClientEventHandling: !state.toggleClientEventHandling})),
+  on(AppActions.setMovementMode,(state, {mode}) =>({...state, setMovementMode: mode}))
   // Handle other toggle actions as needed
 );
 

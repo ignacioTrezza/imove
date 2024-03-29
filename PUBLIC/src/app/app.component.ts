@@ -8,7 +8,9 @@ import { AppState } from './core/store/app.state';
 import * as AppActions from './core/store/actions/app.actions';
 import * as AppSelectors from './core/store/selectors/app.selectors';
 
-
+declare global {
+  interface Window { electronAPI: any; }
+}
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -49,7 +51,16 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
   ngOnInit(): void {
-    
+    if (this.electronService.isElectron) {
+      console.log('Running in Electron:', this.electronService.isElectron);
+      // Example usage
+      this.electronService.electronAPI.getLocalIpAddress().then((ipAddress: any) => {
+        console.log('Local IP Address:', ipAddress);
+        this.websocketService.connect(ipAddress);
+      });
+    }
+
+
     this.store.pipe(select(AppSelectors.selectToggleRemoteClick)).subscribe(toggleRemoteClick => {
       this.toggleRemoteClickk = toggleRemoteClick;
           
@@ -169,7 +180,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   initializeWebSocketConnection(): void {
-    this.websocketService.connect('192.168.0.129:443');
+    this.websocketService.connect('192.168.0.147:443');
   }
 
   sendMessage(): void {

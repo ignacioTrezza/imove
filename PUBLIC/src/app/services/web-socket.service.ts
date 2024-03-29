@@ -21,6 +21,7 @@ export class WebsocketService {
   constructor() { }
 
   connect(ipAddress: string): void {
+    console.log('Connecting to WebSocket...', ipAddress);
     this.ws = new WebSocket(`wss://${ipAddress}`);
     this.ws.onopen = () => console.log('WebSocket Client Connected');
     this.ws.onmessage = (event) => {

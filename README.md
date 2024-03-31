@@ -49,3 +49,71 @@ Correr Angular
 
 For generate the dist/browser FrontEnd into electron Project
 ```cd PUBLIC && npx ng build```	
+
+
+
+
+
+
+
+CONFLICTO DE REFERENCIAS DE REMAS:
+El mensaje de `git fsck --full` indica varios problemas, incluyendo punteros SHA1 inválidos para tu rama `store_integration` tanto en local como en remoto, y también problemas con `HEAD`. Esto sugiere que las referencias de tu rama están corruptas. Aquí hay pasos detallados para intentar solucionar estos problemas:
+
+### 1. Corregir el puntero HEAD
+
+Primero, asegúrate de que el puntero `HEAD` esté correcto. Si `HEAD` está dañado, puedes intentar corregirlo manualmente:
+
+```bash
+echo ref: refs/heads/master > .git/HEAD
+```
+
+Este comando cambia el `HEAD` a apuntar a la rama `master`. Puedes reemplazar `master` con otra rama si prefieres cambiar a una diferente.
+
+### 2. Eliminar referencias corruptas
+
+Dado que las referencias de `store_integration` están corruptas, puedes intentar eliminarlas y luego restaurarlas desde el remoto (si están disponibles allí) o reconstruirlas manualmente si conoces un commit seguro al que puedan apuntar.
+
+Para eliminar las referencias corruptas:
+
+```bash
+rm .git/refs/heads/store_integration
+rm .git/refs/remotes/origin/store_integration
+rm .git/logs/refs/heads/store_integration
+rm .git/logs/refs/remotes/origin/store_integration
+```
+
+### 3. Recuperar la rama desde el remoto
+
+Después de eliminar las referencias corruptas, intenta recuperar la rama desde el repositorio remoto:
+
+```bash
+git fetch origin
+git checkout -b store_integration origin/store_integration
+```
+
+Este conjunto de comandos intentará crear una nueva rama `store_integration` local basada en la rama remota `origin/store_integration`.
+Generalmente Hasta aca se soluciona!
+
+### 4. Si la rama no existe en el remoto o el problema persiste
+
+Si la rama `store_integration` no existe en el remoto o si el problema persiste, puedes intentar reconstruir la rama manualmente utilizando un commit seguro conocido. Si tienes un commit "dangling" (huérfano) que sabes que pertenece a la rama, puedes intentar recuperarlo:
+
+```bash
+git checkout -b new_store_integration <dangling_commit_hash>
+```
+
+Reemplaza `<dangling_commit_hash>` con el hash de un commit huérfano que creas que pertenece a tu rama. Puedes usar los hashes de commit listados como "dangling" por `git fsck`.
+
+### 5. Verificar y continuar
+
+Después de recuperar o reconstruir la rama, verifica que todo esté en orden ejecutando:
+
+```bash
+git log
+```
+
+Esto te mostrará los commits en la rama para asegurarte de que estás en el estado deseado.
+
+### Nota
+
+Si estos pasos no resuelven el problema o si te sientes incómodo realizándolos, considera pedir ayuda a un colega o un profesional con experiencia en recuperación de Git. En casos extremos, si tienes un backup reciente del repositorio o si el código está seguro en otro lugar (como en una rama remota o en el repositorio de un colaborador), podría ser más seguro clonar el repositorio nuevamente o restaurar desde el backup.

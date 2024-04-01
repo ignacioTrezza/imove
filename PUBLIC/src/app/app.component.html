@@ -1,5 +1,4 @@
 <h1>Imove. Mueve el Mouse con el celular</h1>
-<!-- <button (click)="sendMessage()">Send Test Message</button> -->
 <ng-container *ngIf="electronService.isElectron; else noElectron">
     <p>
         We are using Node.js <span id="node-version"></span>,
@@ -8,8 +7,11 @@
     </p>
     
     <h1>Escaneá el QR con el Celular o la Tablet </h1>
+    <div *ngIf="qrCodeUrl">
+      <img [src]="qrCodeUrl" alt="QR Code">
+    </div>
 </ng-container>
-<ng-template #noElectron   >
+<ng-template #noElectron>
     <h1>Poné el celular con la pantalla hacia el cielo</h1>
     <h2>Vale tocar la pantalla y hace click!</h2>
 </ng-template>

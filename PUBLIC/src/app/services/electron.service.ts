@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
+import * as QRCode from 'qrcode';
+
 interface ElectronAPI {
   moveCursorTo(x: number, y: number): void;
   clickIn(x: number, y: number): void;
-  getLocalIpAddress(): Promise<string>; // Changed to return a Promise<string>
+  getLocalIpAddress(): Promise<string>;
   qrWifi(): void;
-  qrMagic(): void;
+  qrMagic(data: string): Promise<string>;
 }
+
 @Injectable({
   providedIn: 'root'
 })
@@ -15,9 +18,9 @@ export class ElectronService {
   }
 
   get electronAPI(): ElectronAPI {
-    console.log('electronAPI', (window as any).electronAPI);
     return (window as any).electronAPI;
   }
+
 
   constructor() { }
 }

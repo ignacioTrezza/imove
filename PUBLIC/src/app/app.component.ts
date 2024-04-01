@@ -30,7 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
   // toggleGyroscope$!: Observable<boolean>;
   // toggleClick$!: Observable<boolean>;
   // toggleMousePos$!: Observable<boolean>;
-
+  qrCodeUrl: string | null = null;
   toggleRemoteClickk!: boolean;
   toggleEventHandlingg!: boolean;
   toggleAccelerometerr!: boolean;
@@ -53,13 +53,15 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (this.electronService.isElectron) {
       console.log('Running in Electron:', this.electronService.isElectron);
-      // Example usage
+
+    
       this.electronService.electronAPI.getLocalIpAddress().then((ipAddress: any) => {
         console.log('Local IP Address:', ipAddress);
         this.websocketService.connect(ipAddress);
+        this.generateQRCode(ipAddress)
       });
     }
-
+    
 
     this.store.pipe(select(AppSelectors.selectToggleRemoteClick)).subscribe(toggleRemoteClick => {
       this.toggleRemoteClickk = toggleRemoteClick;
@@ -203,6 +205,17 @@ export class AppComponent implements OnInit, OnDestroy {
     // this.websocketService.toggleRemoteClick.subscribe(enabled => {
       // this.toggleRemoteClick$ = this.websocketService.toggleRemoteClick.asObservable();   
     //  });
+  }
+  async generateQRCode(ipAddress: string) {
+    if (this.electronService.isElectron) {
+      try {
+        this.qrCodeUrl = await this.electronService.electronAPI.qrMagic(ipAddress);
+        console.log('QRCode',this.qrCodeUrl);
+        // You can now use qrCodeUrl to display the QR code in your UI
+      } catch (error) {
+        console.error('Error generating QR code:', error);
+      }
+    }
   }
   ngOnDestroy(): void {
     this.removeDeviceEventListeners();

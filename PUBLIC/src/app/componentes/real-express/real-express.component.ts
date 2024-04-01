@@ -21,6 +21,15 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private prevAccelIncludingGravityX: number = 0;
   private prevAccelIncludingGravityY: number = 0;
+  private prevAccelIncludingGravityZ: number = 0;
+
+  private prevAccelerationX: number = 0;
+  private prevAccelerationY: number = 0;
+  private prevAccelerationZ: number = 0;
+
+  private prevGyroscopeAlpha: number = 0;
+  private prevGyroscopeBeta: number = 0;
+  private prevGyroscopeGamma: number = 0;
 
   toggleRemoteClick: boolean = false;
   toggleEventHandling: boolean = false;
@@ -90,36 +99,36 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.store.pipe(select(AppSelectors.selectToggleEventHandling)).subscribe(toggleEventHandling => {
         this.toggleEventHandling = toggleEventHandling;
-        if (this.toggleEventHandling === true) {
-          console.log('EVENT HANDLING11', this.toggleEventHandling);
+        // if (this.toggleEventHandling === true) {
+          // console.log('EVENT HANDLING11', this.toggleEventHandling);
 
-          let parsedData = { x: 0, y: 0, z: 0 };
+        //   let parsedData = { x: 0, y: 0, z: 0 };
 
-          if (this.toggleAccelerometer === true) {
-            parsedData = { ...parsedData, x: this.accelX$.value, y: this.accelY$.value, z: this.accelZ$.value }
-          }
-          if (this.toggleAccelerometerIncludingGravity === true) {
-            parsedData = { ...parsedData, x: this.accelIncludingGravityX$.value, y: this.accelIncludingGravityY$.value, z: this.accelIncludingGravityZ$.value }
-          }
-          if (this.toggleGyroscope === true) {
-            parsedData = { ...parsedData, x: this.gyroAlpha$.value, y: this.gyroBeta$.value, z: this.gyroGamma$.value }
-          }
-          console.log('VALUE:', this.cube.position.x, this.cube.position.y, this.cube.position.z);
+        //   if (this.toggleAccelerometer === true) {
+        //     parsedData = { ...parsedData, x: this.accelX$.value, y: this.accelY$.value, z: this.accelZ$.value }
+        //   }
+        //   if (this.toggleAccelerometerIncludingGravity === true) {
+        //     parsedData = { ...parsedData, x: this.accelIncludingGravityX$.value, y: this.accelIncludingGravityY$.value, z: this.accelIncludingGravityZ$.value }
+        //   }
+        //   if (this.toggleGyroscope === true) {
+        //     parsedData = { ...parsedData, x: this.gyroAlpha$.value, y: this.gyroBeta$.value, z: this.gyroGamma$.value }
+        //   }
+        //   console.log('VALUE:', this.cube.position.x, this.cube.position.y, this.cube.position.z);
 
-          if (parsedData.x !== null && parsedData.y !== null && parsedData.z !== null) {
+        //   if (parsedData.x !== null && parsedData.y !== null && parsedData.z !== null) {
 
-            const deltaX = parsedData.x - this.prevAccelIncludingGravityX;
-            const deltaY = parsedData.y - this.prevAccelIncludingGravityY;
+        //     const deltaX = parsedData.x - this.prevAccelIncludingGravityX;
+        //     const deltaY = parsedData.y - this.prevAccelIncludingGravityY;
 
-            this.switchMode(this.currentMode, deltaX, deltaY);
+        //     this.switchMode(this.currentMode, deltaX, deltaY);
 
-            this.prevAccelIncludingGravityX = parsedData.x;
-            this.prevAccelIncludingGravityY = parsedData.y;
+        //     this.prevAccelIncludingGravityX = parsedData.x;
+        //     this.prevAccelIncludingGravityY = parsedData.y;
 
-          } else {
-            console.log('XYZ:', parsedData.x, parsedData.y, parsedData.z, this.cube.position.x, this.cube.position.y, this.cube.position.z);
-          }
-        }
+        //   } else {
+        //     console.log('XYZ:', parsedData.x, parsedData.y, parsedData.z, this.cube.position.x, this.cube.position.y, this.cube.position.z);
+        //   }
+        // }
       });
 
       this.store.pipe(select(AppSelectors.selectToggleGyroscope)).subscribe(toggleGyroscope => {
@@ -127,13 +136,18 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.toggleGyroscope === true) {
           this.gyroSubscription = this.websocketService.gyroscopeData.subscribe(({ alpha, beta, gamma }) => {
             console.log(`Gyroscope: alpha=${alpha}, beta=${beta}, gamma=${gamma}`);
-            this.gyroAlpha$.next(alpha);
-            this.gyroBeta$.next(beta);
-            this.gyroGamma$.next(gamma);
+            const deltaX = alpha - this.previousX;
+            const deltaY = beta - this.previousY;
+
+            this.switchMode(this.currentMode, deltaX, deltaY);
+
+            this.previousX = alpha;
+            this.previousY = beta;
+            // this.previousZ = gamma;
             // Handle gyroscope data
           });
         } else {
-          if(this.gyroSubscription){
+          if (this.gyroSubscription) {
             this.gyroSubscription.unsubscribe();
           }
         }
@@ -143,14 +157,19 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
         this.toggleAccelerometer = toggleAccelerometer;
         if (this.toggleAccelerometer === true) {
           this.accelSubscription = this.websocketService.accelerometerData.subscribe(({ x, y, z }) => {
-            console.log(`Accelerometer: x=${x}, y=${y}, z=${z} `);
-            this.accelX$.next(x);
-            this.accelY$.next(y);
-            this.accelZ$.next(z);
+            console.log(`Accelerometer en real-express160: x=${x}, y=${y}, z=${z} `);
+            const deltaX = x - this.previousX;
+            const deltaY = y - this.previousY;
+
+            this.switchMode(this.currentMode, deltaX, deltaY);
+
+            this.previousX = x;
+            this.previousY = y;
+            // this.previousZ = z;
             // Handle accelerometer data
           });
         } else {
-          if(this.accelSubscription){
+          if (this.accelSubscription) {
             this.accelSubscription.unsubscribe();
           }
         }
@@ -162,33 +181,41 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
           this.accelIncludingGravitySubscription = this.websocketService.accelerometerIncludingGravityData
             .subscribe(({ x, y, z }) => {
               console.log(`Accelerometer Including Gravity: x=${x}, y=${y}, z=${z}`);
-              this.accelIncludingGravityX$.next(x);
-              this.accelIncludingGravityY$.next(y);
-              this.accelIncludingGravityZ$.next(z);
+              const deltaX = x - this.previousX;
+              const deltaY = y - this.previousY;
+  
+              this.switchMode(this.currentMode, deltaX, deltaY);
+  
+              this.previousX = x;
+              this.previousY = y;
             })
         } else {
-          if(this.accelIncludingGravitySubscription){
+          if (this.accelIncludingGravitySubscription) {
             this.accelIncludingGravitySubscription.unsubscribe();
           }
         }
       });
 
-      this.store.pipe(select(AppSelectors.selectToggleClick)).subscribe(toggleClick => {
-        this.toggleClick = toggleClick;
-      });
-      this.store.pipe(select(AppSelectors.selectToggleMousePos)).subscribe(toggleMousePos => {
-        this.toggleMousePos = toggleMousePos;
-        this.processedPointerSubscription = this.websocketService.processedPointerData.subscribe(({ x, y, z }) => {
-          //     console.log(`Processed Pointer: x=${x}, y=${y}, z=${z}`);
-          //     this.newX = x;
-          //     this.newY = y;
-          //     this.newZ = z;
-          //     // Handle processed pointer data
-          //   });
-          // } else {
-          //   this.processedPointerSubscription.unsubscribe();
-          // }
-      });
+      // this.store.pipe(select(AppSelectors.selectToggleClick)).subscribe(toggleClick => {
+      //   this.toggleClick = toggleClick;
+      // });
+      // this.store.pipe(select(AppSelectors.selectToggleMousePos)).subscribe(toggleMousePos => {
+      //   this.toggleMousePos = toggleMousePos;
+      //   this.processedPointerSubscription = this.websocketService.processedPointerData.subscribe(({ x, y, z }) => {
+      //     //     console.log(`Processed Pointer: x=${x}, y=${y}, z=${z}`);
+      //     //     this.newX = x;
+      //     //     this.newY = y;
+      //     //     this.newZ = z;
+      //     //     // Handle processed pointer data
+      //     //   });
+      //     // } else {
+      //     //   this.processedPointerSubscription.unsubscribe();
+      //     // }
+      //   });
+
+      // }
+
+      // )
       this.store.pipe(select(AppSelectors.selectToggleClientEventHandling)).subscribe(toggleClientEventHandling => {
         this.toggleClientEventHandling = toggleClientEventHandling;
       });
@@ -196,7 +223,7 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
         this.currentMode = setMovementMode;
       });
     }
-      )}
+  
   }
   // moveCursorBasedOnAcceleration(currentX: number, currentY: number, x: number, y: number, z: number): void {
   //   if (
@@ -300,7 +327,7 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
 
   };
   private mouseMoveListener = (event: MouseEvent) => {
-    
+
     if (this.isDragging) {
       const deltaX = event.clientX - this.previousX;
       const deltaY = event.clientY - this.previousY;
@@ -311,7 +338,7 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
       this.previousY = event.clientY;
 
     }
-    
+
   };
   private handleClientEvent(status: boolean): void {
 
@@ -319,20 +346,20 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
       console.log('REMOTE CLICK ACTIVADO');
 
       document.getElementById('threejs-container')!.addEventListener('mousedown', this.mouseDownListener);
-      document.addEventListener('mousemove',this.mouseMoveListener);
+      document.addEventListener('mousemove', this.mouseMoveListener);
       document.getElementById('threejs-container')!.addEventListener('contextmenu', (event) => {
         event.preventDefault();
       });
     } else {
       console.log('REMOTE CLICK DESACTIVADO');
       document.removeEventListener('mousedown', this.mouseDownListener);
-      document.removeEventListener('mousemove', this.mouseMoveListener); 
-      this.mouseUpListener 
+      document.removeEventListener('mousemove', this.mouseMoveListener);
+      this.mouseUpListener
       // document.removeEventListener('keydown', this.handleKeyDown.bind(this));
       // document.removeEventListener('mouseup', this.mouseUpListener);
       // document.removeEventListener('mousedown', this.mouseUpListener);
       // document.removeEventListener('mousemove', this.mouseUpListener);
-     
+
     }
 
   }

@@ -24,40 +24,40 @@ wss.on('connection', function connection(ws) {
     // console.log('OnConnection:', ws)
   ws.on('message', function incoming(message) {
     try {
-      const data = JSON.parse(message);
-    //   console.log(`Recibo message: data.tipo=${data.tipo}, data.message=${data.message}, data.x=${data.x}, data.y=${data.y}, data.z=${data.z}, data.alpha=${data.alpha}`);
-        switch (data.tipo) {
-            case 'message': if(data.message) console.log(`Message: ${data.message}`)
+      // const data = JSON.parse(message);
+     //   console.log(`Recibo message: data.tipo=${data.tipo}, data.message=${data.message}, data.x=${data.x}, data.y=${data.y}, data.z=${data.z}, data.alpha=${data.alpha}`);
+        // switch (data.tipo) {
+        //     case 'message': if(data.message) console.log(`Message: ${data.message}`)
                 
-                break;
+        //         break;
         
-            case 'MousePos':  if (data.x && data.y) {
-                console.log(`Mouse position: x=${data.x}, y=${data.y}`);
-              }
+        //     case 'MousePos':  if (data.x && data.y) {
+        //         console.log(`Mouse position: x=${data.x}, y=${data.y}`);
+        //       }
                 
-                break;
+        //         break;
 
-            case 'Gyroscope': if (data.alpha && data.beta && data.gamma) {
-                // console.log(`Gyroscope data: alpha=${data.alpha}, beta=${data.beta}, gamma=${data.gamma}`);
-              }
+        //     case 'Gyroscope': if (data.alpha && data.beta && data.gamma) {
+        //         // console.log(`Gyroscope data: alpha=${data.alpha}, beta=${data.beta}, gamma=${data.gamma}`);
+        //       }
                 
-                break;
+        //         break;
                  
-            case 'Accelerometer': if (data.x && data.y && data.z) {
-                // console.log(`Accelerometer data: X=${data.x}, Y=${data.y}, Z=${data.z}`);
-              }
+        //     case 'Accelerometer': if (data.x && data.y && data.z) {
+        //         // console.log(`Accelerometer data: X=${data.x}, Y=${data.y}, Z=${data.z}`);
+        //       }
                 
-                break;
+        //         break;
 
-            case 'AccelerometerIncludingGravity': if (data.x && data.y && data.z) {
-                console.log(`Accelerometer Including Gravity data: X=${data.x}, Y=${data.y}, Z=${data.z}`);
-              }
+        //     case 'AccelerometerIncludingGravity': if (data.x && data.y && data.z) {
+        //         console.log(`Accelerometer Including Gravity data: X=${data.x}, Y=${data.y}, Z=${data.z}`);
+        //       }
               
-              break;
+        //       break;
                               
-            default: 
-                break;
-        }
+        //     default: 
+        //         break;
+        // }
     
     } catch (e) {
       console.log('error received: %s', message);

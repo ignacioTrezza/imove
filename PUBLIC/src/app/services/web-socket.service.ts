@@ -24,6 +24,8 @@ export class WebsocketService {
     console.log('Connecting to WebSocket...', ipAddress);
     this.ws = new WebSocket(`wss://${ipAddress}`);
     this.ws.onopen = () => console.log('WebSocket Client Connected');
+
+    //CUANDO ES  RECEPTOR DE MENSAJES
     this.ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       this.messagesSubject.next(data);
@@ -32,6 +34,7 @@ export class WebsocketService {
     this.ws.onclose = () => console.log('WebSocket connection closed');
   }
 
+  //CUANDO ES EMISOR DE MENSAJES
   sendMessage(message: any): void {
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
@@ -48,13 +51,15 @@ export class WebsocketService {
     this.gyroscopeData.emit({ alpha, beta, gamma });
   }
 
-  emitClick(x: number, y: number): void {
-    this.Click.emit({ x, y });
-  }
 
   emitAccelerometerIncludingGravityData(x: number, y: number, z: number): void {
     this.accelerometerIncludingGravityData.emit({ x, y, z });
   }
+
+  emitClick(x: number, y: number): void {
+    this.Click.emit({ x, y });
+  }
+
   emitProcessedPointerData(x: number, y: number, z: number): void {
     this.processedPointerData.emit({ x, y, z });
   }

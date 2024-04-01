@@ -15,16 +15,20 @@ contextBridge.exposeInMainWorld('electronAPI', {
     });
   },
   qrWifi: () => {
-    ipcRenderer.on('qr-code-wifi', (event, url) => {
-      qrcode.toDataURL(localIpAddress + ':443', (err, url) => {
-        if (err) console.error(err);
-        else {
-          console.log('url', url);
-          return url
-        }
-      })
-    }
-    )},
+    return new Promise((resolve, reject) => {
+      ipcRenderer.send('qr-code-wifi'); // Request WiFi details
+      ipcRenderer.once('wifi-details', (event, details) => {
+        // Assuming details contain the necessary WiFi information
+        qrcode.toDataURL(`WIFI:S:${details.ssid};T:${details.encryption};P:${details.password};;`, (err, dataUrl) => {
+          if (err) reject(err);
+          else resolve(dataUrl);
+        });
+      });
+      ipcRenderer.once('wifi-details-error', (event, errorMessage) => {
+        reject(new Error(errorMessage));
+      });
+    });
+  },
 
       getLocalIpAddress: () => ipcRenderer.invoke('get-local-ip-address'), 
 }),
@@ -145,8 +149,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     //     document.body.appendChild(qrContainer); // Append the container to the body
     //   }
     // })
-    // ipcRenderer.on('wifi-details', (event, details) => {
-    //   console.log('Received Wi-Fi details:', details);
-    //   // Update UI or logic based on Wi-Fi details
-    // });
+    ipcRenderer.on('wifi-details', (event, details) => {
+      console.log('Received Wi-Fi details:', details);
+    this.qrCodeUrl = details  // Update UI or logic based on Wi-Fi details
+    });
   })
+

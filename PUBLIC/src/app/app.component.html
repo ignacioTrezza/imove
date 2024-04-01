@@ -5,11 +5,19 @@
         Chromium <span id="chrome-version"></span>,
         and Electron <span id="electron-version"></span>.  
     </p>
+    <div class="qrclass">
+
     
-    <h1>Escaneá el QR con el Celular o la Tablet </h1>
+    <div *ngIf="wifiQrCodeUrl">
+        <h1>Escaneá el QR para conectarte a la red WIFI </h1>
+      <img [src]="wifiQrCodeUrl" alt="WIFI QR Code">
+    </div>
+   
     <div *ngIf="qrCodeUrl">
+        <h1>Escaneá el QR con el Celular o la Tablet </h1>
       <img [src]="qrCodeUrl" alt="QR Code">
     </div>
+</div>
 </ng-container>
 <ng-template #noElectron>
     <h1>Poné el celular con la pantalla hacia el cielo</h1>

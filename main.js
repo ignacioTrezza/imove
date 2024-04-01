@@ -3,7 +3,7 @@ const path = require('node:path')
 const robot = require('robotjs'); // Import robotjs
 const server = require('./server.js');
 const os = require('os'); // Import the os module
-// const  {getWifiDetails}  = require('./wifi-details.js'); // Adjust the path as necessary
+const  {getWifiDetails}  = require('./wifi-details.js'); // Adjust the path as necessary
 
 //Inicializo el servidor
 server;
@@ -57,24 +57,8 @@ const createWindow = () => {
   });
  
    
-    // getWifiDetails((error, details) => {
-    //   if (error) {
-    //     console.error('Failed to get Wi-Fi details:', error);
-    //   } else {
-    //     console.log('Wi-Fi Details:', details);
-    //     mainWindow.webContents.send('wifi-details', details);
-    //     // Optionally, use these details when creating the window or in other app logic
-    //   }
-    // });
-    // createWindow()
-    // session.defaultSession.setCertificateVerifyProc((request, callback) => {
-    //   if (request.hostname === '192.168.0.147') {
-    //     callback(0); // Bypass certificate validation
-    //   } else {
-    //     callback(-2); // Use default certificate validation for other domains
-    //   }
-    // });
-  // })
+  
+   
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow()
@@ -109,3 +93,16 @@ ipcMain.on('click-mouse', (event) => {
 ipcMain.handle('get-local-ip-address', async (event) => {
   return getLocalIpAddress() || '127.0.0.1'; // Assuming getLocalIpAddress is your function that returns the IP address
 });
+ipcMain.on('qr-code-wifi', (event) => {
+  // Assuming you have a way to get password and encryptionType, or they are not needed
+  getWifiDetails('yourPassword', 'WPA', (error, details) => {
+    if (error) {
+      console.error('Failed to get Wi-Fi details:', error);
+      event.reply('wifi-details-error', error.message); // Send error back to renderer
+    } else {
+      console.log('Wi-Fi Details:', details);
+      mainWindow.webContents.send('wifi-details', details); // Send details back to renderer
+    }
+  });
+});
+

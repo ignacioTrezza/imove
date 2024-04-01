@@ -31,6 +31,7 @@ export class AppComponent implements OnInit, OnDestroy {
   // toggleClick$!: Observable<boolean>;
   // toggleMousePos$!: Observable<boolean>;
   qrCodeUrl: string | null = null;
+  wifiQrCodeUrl: string | null = null;
   toggleRemoteClickk!: boolean;
   toggleEventHandlingg!: boolean;
   toggleAccelerometerr!: boolean;
@@ -39,6 +40,7 @@ export class AppComponent implements OnInit, OnDestroy {
   toggleClickk!: boolean;
   toggleMousePoss!: boolean;
   toggleClientEventHandlingg!: boolean;
+ 
 
   constructor(
     private store: Store<AppState>,
@@ -59,6 +61,7 @@ export class AppComponent implements OnInit, OnDestroy {
         console.log('Local IP Address:', ipAddress);
         this.websocketService.connect(ipAddress);
         this.generateQRCode(ipAddress)
+        this.generateWifiQRCode();
       });
     }
     
@@ -214,6 +217,17 @@ export class AppComponent implements OnInit, OnDestroy {
         // You can now use qrCodeUrl to display the QR code in your UI
       } catch (error) {
         console.error('Error generating QR code:', error);
+      }
+    }
+  }
+  async generateWifiQRCode() {
+    if (this.electronService.isElectron) {
+      try {
+        this.wifiQrCodeUrl = await this.electronService.electronAPI.qrWifi();
+        console.log('WIFI QRCode',this.wifiQrCodeUrl);
+        // You can now use qrCodeUrl to display the QR code in your UI
+      } catch (error) {
+        console.error('Error generating WIFI QR code:', error);
       }
     }
   }

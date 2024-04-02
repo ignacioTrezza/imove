@@ -68,7 +68,7 @@ const createWindow = () => {
     if (process.platform !== 'darwin') app.quit()
   })
 // Listen for the move-cursor message
-ipcMain.on('move-cursor', (event, { x, y }) => {
+ipcMain.on('modify-cursor-position', (event, { x, y }) => {
 
   console.log(`moveCursorDetected (X:${x}, Y:${y})`)
   const pos = robot.getMousePos();
@@ -85,11 +85,10 @@ ipcMain.on('move-cursor', (event, { x, y }) => {
     newY = Math.max(0, Math.min(newY, 1080));
       // Handle accelerometer including gravity data
       // this.electronService.electronAPI.moveCursorTo(newX, newY);
-  robot.moveMouse(newX, newY); // Move the cursor to the specified position
+  // robot.moveMouse(newX, newY); // Move the cursor to the specified position
+  robot.moveMouseSmooth(newX, newY);
 });
 ipcMain.on('click-mouse', (event) => {
-  const even = JSON.parse(event)
-  console.log(`MouseClick detected (Event:${JSON.stringify(even)})`)
   robot.mouseClick(); //{button: 'left'}  Move the cursor to the specified position
 });
 ipcMain.handle('get-local-ip-address', async (event) => {
@@ -106,5 +105,56 @@ ipcMain.on('qr-code-wifi', (event) => {
       mainWindow.webContents.send('wifi-details', details); // Send details back to renderer
     }
   });
+});
+ipcMain.on('move-cursor', (event, { x, y }) => {
+  let sensitivityX=1.5;
+  let sensitivityY=1.5;
+  if(x>=0 && x<2){
+    sensitivityX=0;
+  }else if(x>=2 && x<2.5){
+    sensitivityX=1.5;
+  }else if(x>=2.5 && x<3.5){
+    sensitivityX=2.5;
+  }else if(x>=3.5 && x<5){
+    sensitivityX=5;
+  }else if(x>=5 && x<7){
+    sensitivityX=10;
+  }else if(x>7){
+    sensitivityX=20;
+  }
+  if(y>=0 && y<1){
+    sensitivityY=0;
+  }else if(y>=1 && y<2){
+    sensitivityY=1.5;
+  }else if(y>=2 && y<3){
+    sensitivityY=2.5;
+  }else if(y>=3 && y<4){
+    sensitivityY=5;
+  }else if(y>=4 && y<6){
+    sensitivityY=10;
+  }else if(y>6){
+    sensitivityY=20;
+  }
+  console.log(`moveCursorDetected (X:${x}, Y:${y})`);
+  const pos = robot.getMousePos();
+
+  let deltaX = x * sensitivityX;
+  let deltaY = y * sensitivityY;
+
+  // Calculate new position
+  let newX = pos.x + deltaX; // Add deltaX to move horizontally
+  let newY = pos.y + deltaY; // Add deltaY to move vertically
+
+  // Get the screen size dynamically
+  const screenSize = robot.getScreenSize();
+  const maxWidth = screenSize.width;
+  const maxHeight = screenSize.height;
+
+  // Boundary checks
+  newX = Math.max(0, Math.min(newX, maxWidth));
+  newY = Math.max(0, Math.min(newY, maxHeight));
+
+  // Move the cursor smoothly to the new position
+  robot.moveMouseSmooth(newX, newY);
 });
 

@@ -130,10 +130,10 @@ export class AppComponent implements OnInit, OnDestroy {
             console.log(`Gyroscope data: alpha=${message.alpha}, beta=${message.beta}, gamma=${message.gamma}`);
             if(this.electronService.isElectron){
               if(this.toggleMousePoss){
-                this.electronService.electronAPI.moveCursorTo(message.alpha! , message.gamma!)
+                this.electronService.electronAPI.moveCursorTo(message.alpha!-180/10 , message.gamma!)
               }else if(this.toggleEventHandlingg){//Mover CANVAS con sensores
                 //Localmente emito un subjectpara ACIGDATA... (Al cual, me subscribo en real-express.component.ts)
-                this.websocketService.emitGyroscopeData(message.alpha!, message.beta!, message.gamma!);
+                this.websocketService.emitGyroscopeData(message.alpha!-180/10, message.beta!, message.gamma!);
               }
            
             } 
@@ -170,19 +170,6 @@ export class AppComponent implements OnInit, OnDestroy {
               break;          
          }
      
-      });
-
-      this.websocketService.Click.subscribe(({ x, y }) => {
-        console.log(`Click event received: X=${x}, Y=${y}`);
-        if(this.toggleClickk && this.electronService.isElectron){
-          // this.electronService.electronAPI.clickIn(x, y);
-          console.log('CLICKconfirmado entre dispositivos', x, y)
-        } else {
-            if (this.toggleRemoteClickk) {
-              //Ya lo emitiste el click..(En el cliente POR AHORA no quiero hacer nada con el click. No pretendo mover el cliente!)
-              // this.websocketService.emitClick(x, y);
-            }
-        }
       });
     }
 

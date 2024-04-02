@@ -69,6 +69,7 @@ const createWindow = () => {
   })
 // Listen for the move-cursor message
 ipcMain.on('move-cursor', (event, { x, y }) => {
+
   console.log(`moveCursorDetected (X:${x}, Y:${y})`)
   const pos = robot.getMousePos();
   const sensitivity = 1.5; // Adjust this based on your needs
@@ -87,7 +88,8 @@ ipcMain.on('move-cursor', (event, { x, y }) => {
   robot.moveMouse(newX, newY); // Move the cursor to the specified position
 });
 ipcMain.on('click-mouse', (event) => {
-  console.log(`MouseClick detected (Event:${event})`)
+  const even = JSON.parse(event)
+  console.log(`MouseClick detected (Event:${JSON.stringify(even)})`)
   robot.mouseClick(); //{button: 'left'}  Move the cursor to the specified position
 });
 ipcMain.handle('get-local-ip-address', async (event) => {

@@ -1,5 +1,5 @@
 import { Injectable, EventEmitter } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, throttle, timer } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +7,9 @@ import { Observable, Subject } from 'rxjs';
 export class WebsocketService {
   private ws: WebSocket | undefined;
   private messagesSubject = new Subject<any>();
-  public messages$ = this.messagesSubject.asObservable();
+  public messages$ = this.messagesSubject.asObservable().pipe(
+    throttle(() => timer(100)) // Throttle the data to emit once every 100m;
+  )
   public accelerometerData = new EventEmitter<{ x: number; y: number; z: number }>();
   public gyroscopeData = new EventEmitter<{ alpha: number; beta: number; gamma: number }>();
   public Click = new EventEmitter<{ x: number; y: number }>();

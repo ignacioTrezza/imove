@@ -156,7 +156,7 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
       this.store.pipe(select(AppSelectors.selectToggleAccelerometer)).subscribe(toggleAccelerometer => {
         this.toggleAccelerometer = toggleAccelerometer;
         if (this.toggleAccelerometer === true) {
-          this.accelSubscription = this.websocketService.accelerometerData.subscribe(({ x, y, z }) => {
+          this.accelSubscription = this.websocketService. accelerometerData.subscribe(({ x, y, z }) => {
             console.log(`Accelerometer en real-express160: x=${x}, y=${y}, z=${z} `);
             const deltaX = x - this.previousX;
             const deltaY = y - this.previousY;

@@ -9,7 +9,6 @@ import { AccelerometerIncludingGravityDisplayComponent } from './componentes/gra
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RealExpressComponent } from './componentes/real-express/real-express.component';
-import { AnotherSubscriberComponent } from './componentes/another-subscriber/another-subscriber.component';
 import { EffectsModule } from '@ngrx/effects';
 import { AppEffects } from './core/store/effects/app.effect';
 import { GyroscopeDisplayComponent } from './componentes/gyroscope-display/gyroscope-display.component';
@@ -20,7 +19,6 @@ import { GyroscopeDisplayComponent } from './componentes/gyroscope-display/gyros
         AccelerometerDisplayComponent,
         AccelerometerIncludingGravityDisplayComponent,        
         RealExpressComponent,
-        AnotherSubscriberComponent,
         GyroscopeDisplayComponent
     ],
     imports: [
@@ -32,8 +30,7 @@ import { GyroscopeDisplayComponent } from './componentes/gyroscope-display/gyros
         EffectsModule.forRoot([AppEffects])
     ],
     exports: [
-        RealExpressComponent,
-        AnotherSubscriberComponent,
+        RealExpressComponent,        
         AccelerometerDisplayComponent,
         AccelerometerIncludingGravityDisplayComponent,
         GyroscopeDisplayComponent

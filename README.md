@@ -117,3 +117,6 @@ Esto te mostrará los commits en la rama para asegurarte de que estás en el est
 ### Nota
 
 Si estos pasos no resuelven el problema o si te sientes incómodo realizándolos, considera pedir ayuda a un colega o un profesional con experiencia en recuperación de Git. En casos extremos, si tienes un backup reciente del repositorio o si el código está seguro en otro lugar (como en una rama remota o en el repositorio de un colaborador), podría ser más seguro clonar el repositorio nuevamente o restaurar desde el backup.
+
+
+https://vscode.dev/tunnel/desktop-tfb8jdh/C:/Users/tromedlov/Desktop/proyectosVM/imove/imoves

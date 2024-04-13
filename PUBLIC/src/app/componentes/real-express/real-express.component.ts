@@ -196,26 +196,6 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
 
-      // this.store.pipe(select(AppSelectors.selectToggleClick)).subscribe(toggleClick => {
-      //   this.toggleClick = toggleClick;
-      // });
-      // this.store.pipe(select(AppSelectors.selectToggleMousePos)).subscribe(toggleMousePos => {
-      //   this.toggleMousePos = toggleMousePos;
-      //   this.processedPointerSubscription = this.websocketService.processedPointerData.subscribe(({ x, y, z }) => {
-      //     //     console.log(`Processed Pointer: x=${x}, y=${y}, z=${z}`);
-      //     //     this.newX = x;
-      //     //     this.newY = y;
-      //     //     this.newZ = z;
-      //     //     // Handle processed pointer data
-      //     //   });
-      //     // } else {
-      //     //   this.processedPointerSubscription.unsubscribe();
-      //     // }
-      //   });
-
-      // }
-
-      // )
       this.store.pipe(select(AppSelectors.selectToggleClientEventHandling)).subscribe(toggleClientEventHandling => {
         this.toggleClientEventHandling = toggleClientEventHandling;
       });
@@ -225,25 +205,7 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   
   }
-  // moveCursorBasedOnAcceleration(currentX: number, currentY: number, x: number, y: number, z: number): void {
-  //   if (
-  //     this.electronService.isElectron) {
-  //     // Normalize acceleration data to a range that suits your screen size and preferences
-  //     const sensitivity = 10; // Adjust this based on your needs
-  //     let deltaX = x * sensitivity;
-  //     let deltaY = y * sensitivity;
-
-  //     // Calculate new position
-  //     this.newX = currentX + deltaX;
-  //     this.newY = currentY - deltaY; // Subtract deltaY because screen coordinates in Y are inverted
-  //     this.newZ = 0;
-  //     // Boundary checks (assuming screen resolution of 1920x1080, adjust as needed)
-  //     this.newX = Math.max(0, Math.min(this.newX, 1920));
-  //     this.newY = Math.max(0, Math.min(this.newY, 1080));
-  //     // Handle accelerometer including gravity data
-  //     this.websocketService.emitProcessedPointerData(this.newX, this.newY, this.newZ);
-  //   }
-  // };
+  
   public setMovementMode(mode: movementMode): void {
     if (this.electronService.isElectron) {
       this.store.dispatch(AppActions.setMovementMode({ mode: mode }));
@@ -255,10 +217,7 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
     document.removeEventListener('mouseup', this.mouseUpListener);
     document.removeEventListener('mousedown', this.mouseDownListener);
     document.removeEventListener('mousemove', this.mouseMoveListener);
-    // this.accelSubscription.unsubscribe();
-    // this.gyroSubscription.unsubscribe();
-    // this.accelIncludingGravitySubscription.unsubscribe();
-    // this.processedPointerSubscription.unsubscribe();
+
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -355,10 +314,6 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
       document.removeEventListener('mousedown', this.mouseDownListener);
       document.removeEventListener('mousemove', this.mouseMoveListener);
       this.mouseUpListener
-      // document.removeEventListener('keydown', this.handleKeyDown.bind(this));
-      // document.removeEventListener('mouseup', this.mouseUpListener);
-      // document.removeEventListener('mousedown', this.mouseUpListener);
-      // document.removeEventListener('mousemove', this.mouseUpListener);
 
     }
 

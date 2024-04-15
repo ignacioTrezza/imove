@@ -28,21 +28,21 @@
 <div id="gyroscopeData"></div> -->
 
 <!-- Buttons to toggle event handling -->
-<button (click)="toggleRemoteClick()"  [ngClass]="{'active': (toggleRemoteClickk)}">Mover Canvas con mouse</button>
-<button (click)="toggleEventHandling()" [ngClass]="{'active': (toggleEventHandlingg)}">Mover canvas con sensores</button>
+<button (click)="toggleRemoteClickHandling()"  [ngClass]="{'active': (toggleRemoteClick)}">Mover Canvas con mouse</button>
+<button (click)="toggleEventHandlingCanvas()" [ngClass]="{'active': (toggleEventHandling)}">Mover canvas con sensores</button>
 <br>
-<button (click)="toggleAccelerometerHandling()" [ngClass]="{'active': (toggleAccelerometerr)}">Usar Accelerometer</button>
-<button (click)="toggleAccelerometerIncludingGravityHandling()" [ngClass]="{'active': (toggleAccelerometerIncludingGravityy)}">Usar Accelerometer Including Gravity</button>
-<button (click)="toggleGyroscopeHandling()" [ngClass]="{'active': (toggleGyroscopee)}">Usar Gyroscope </button>
+<button (click)="toggleAccelerometerHandling()" [ngClass]="{'active': (toggleAccelerometer)}">Usar Accelerometer</button>
+<button (click)="toggleAccelerometerIncludingGravityHandling()" [ngClass]="{'active': (toggleAccelerometerIncludingGravity)}">Usar Accelerometer Including Gravity</button>
+<button (click)="toggleGyroscopeHandling()" [ngClass]="{'active': (toggleGyroscope)}">Usar Gyroscope </button>
 <br>
-<button (click)="toggleClickHandling()" [ngClass]="{'active': (toggleClickk)}">Permitir hacer click en host con cliente</button>
-<button (click)="toggleMousePosHandling()" [ngClass]="{'active': (toggleMousePoss)}">Permitir mover el cursor del host con el cliente</button>
+<button (click)="toggleClickHandling()" [ngClass]="{'active': (toggleClick)}">Permitir hacer click en host con cliente</button>
+<button (click)="toggleMousePosHandling()" [ngClass]="{'active': (toggleMousePos)}">Permitir mover el cursor del host con el cliente</button>
 <br>
-<button (click)="toggleClientEventHandling()" [ngClass]="{'active': (toggleClientEventHandlingg)}">Mostrar CANVAS</button>
+<button (click)="toggleShowCanvasClientHandling()" [ngClass]="{'active': (toggleClientEventHandling)}">Mostrar CANVAS</button>
 
 <!-- <app-another-subscriber class="accomodation"></app-another-subscriber> -->
 
-<app-real-express *ngIf="toggleClientEventHandlingg" class="real-express"></app-real-express>
+<app-real-express *ngIf="toggleClientEventHandling" class="real-express"></app-real-express>
 
 
 

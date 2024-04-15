@@ -22,25 +22,17 @@ export class AppComponent implements OnInit, OnDestroy {
 
   public electronService: ElectronService;
 
-  // Flags to enable/disable event handling
-  // toggleRemoteClick$!: Observable<boolean>;
-  // toggleEventHandling$!: Observable<boolean>;
-  // toggleAccelerometer$!: Observable<boolean>;
-  // toggleAccelerometerIncludingGravity$!: Observable<boolean>;
-  // toggleGyroscope$!: Observable<boolean>;
-  // toggleClick$!: Observable<boolean>;
-  // toggleMousePos$!: Observable<boolean>;
   qrCodeUrl: string | null = null;
   wifiQrCodeUrl: string | null = null;
-  toggleRemoteClickk!: boolean;
-  toggleEventHandlingg!: boolean;
-  toggleAccelerometerr!: boolean;
-  toggleAccelerometerIncludingGravityy!: boolean;
-  toggleGyroscopee!: boolean;
-  toggleClickk!: boolean;
-  toggleMousePoss!: boolean;
-  toggleClientEventHandlingg!: boolean;
- 
+  toggleRemoteClick!: boolean;
+  toggleEventHandling!: boolean;
+  toggleAccelerometer!: boolean;
+  toggleAccelerometerIncludingGravity!: boolean;
+  toggleGyroscope!: boolean;
+  toggleClick!: boolean;
+  toggleMousePos!: boolean;
+  toggleClientEventHandling!: boolean;
+  isSensorDataHandlingEnabled: boolean = false;
 
   constructor(
     private store: Store<AppState>,
@@ -67,33 +59,33 @@ export class AppComponent implements OnInit, OnDestroy {
     
 
     this.store.pipe(select(AppSelectors.selectToggleRemoteClick)).subscribe(toggleRemoteClick => {
-      this.toggleRemoteClickk = toggleRemoteClick;
+      this.toggleRemoteClick = toggleRemoteClick;
           
     });
     this.store.pipe(select(AppSelectors.selectToggleEventHandling)).subscribe(toggleEventHandling => {
-      this.toggleEventHandlingg = toggleEventHandling;
+      this.toggleEventHandling = toggleEventHandling;
     });
     
     this.store.pipe(select(AppSelectors.selectToggleGyroscope)).subscribe(toggleGyroscope => {
-      this.toggleGyroscopee = toggleGyroscope;
+      this.toggleGyroscope = toggleGyroscope;
     });
     this.store.pipe(select(AppSelectors.selectToggleAccelerometer)).subscribe(toggleAccelerometer => {
-      this.toggleAccelerometerr = toggleAccelerometer;
+      this.toggleAccelerometer = toggleAccelerometer;
     });
     this.store.pipe(select(AppSelectors.selectToggleAccelerometerIncludingGravity)).subscribe(toggleAccelerometerIncludingGravity => {
-      this.toggleAccelerometerIncludingGravityy = toggleAccelerometerIncludingGravity;
+      this.toggleAccelerometerIncludingGravity = toggleAccelerometerIncludingGravity;
     });
     this.store.pipe(select(AppSelectors.selectToggleClick)).subscribe(toggleClick => {
-      this.toggleClickk = toggleClick;
+      this.toggleClick = toggleClick;
     });
     this.store.pipe(select(AppSelectors.selectToggleMousePos)).subscribe(toggleMousePos => {
-      this.toggleMousePoss = toggleMousePos;
+      this.toggleMousePos = toggleMousePos;
     });
     this.store.pipe(select(AppSelectors.selectToggleClientEventHandling)).subscribe(toggleClientEventHandling => {
-      this.toggleClientEventHandlingg = toggleClientEventHandling;
+      this.toggleClientEventHandling = toggleClientEventHandling;
     });
 
-    this.initializeWebSocketConnection();
+    // this.initializeWebSocketConnection();
     this.addDeviceEventListeners();
 
     if(this.electronService.isElectron){
@@ -103,7 +95,7 @@ export class AppComponent implements OnInit, OnDestroy {
             case 'message': if(message.message) console.log(`Message: ${message.message}`)              
               break;
       
-          case 'MousePos':  if (this.toggleMousePoss && message.x && message.y) {
+          case 'MousePos':  if (this.toggleMousePos && message.x && message.y) {
               console.log(`Mouse position: x=${message.x}, y=${message.y}`);
               if (this.electronService.isElectron) {
                 this.electronService.electronAPI.moveCursorTo(message.x, message.y);
@@ -113,12 +105,12 @@ export class AppComponent implements OnInit, OnDestroy {
             }              
               break;
 
-          case 'Click': if (this.toggleClickk && message.x && message.y) {
+          case 'Click': if (this.toggleClick && message.x && message.y) {
             console.log(`Clicked: X=${message.x}, Y=${message.y}`);
             if(this.electronService.isElectron){
                 this.electronService.electronAPI.clickIn(message.x, message.y);
             } else {
-              if (this.toggleRemoteClickk) {
+              if (this.toggleRemoteClick) {
                 //Ya lo emitiste el evento por webSocket.. Lo estas recibiendo aca de hecho!
                 // this.websocketService.emitClick(message.x, message.y);
               }
@@ -126,41 +118,41 @@ export class AppComponent implements OnInit, OnDestroy {
           }
               break;
 
-          case 'Gyroscope': if (this.toggleGyroscopee && message.alpha && message.beta && message.gamma) {
+          case 'Gyroscope': if (this.toggleGyroscope && message.alpha && message.beta && message.gamma) {
             console.log(`Gyroscope data: alpha=${message.alpha}, beta=${message.beta}, gamma=${message.gamma}`);
             if(this.electronService.isElectron){
-              if(this.toggleMousePoss){
+              if(this.toggleMousePos){
                 this.electronService.electronAPI.moveCursorTo(message.alpha!-180/10 , message.gamma!)
-              }else if(this.toggleEventHandlingg){//Mover CANVAS con sensores
+              }else if(this.toggleEventHandling){//Mover CANVAS con sensores
                 //Localmente emito un subjectpara ACIGDATA... (Al cual, me subscribo en real-express.component.ts)
-                this.websocketService.emitGyroscopeData(message.alpha!-180/10, message.beta!, message.gamma!);
+                this.websocketService.sendGyroscopeData(message.alpha!-180/10, message.beta!, message.gamma!);
               }
            
             } 
           }            
               break;
                
-          case 'Accelerometer': if (this.toggleAccelerometerr  && message.x && message.y && message.z) {
+          case 'Accelerometer': if (this.toggleAccelerometer  && message.x && message.y && message.z) {
             console.log(`Accelerometer data: X=${message.x}, Y=${message.y}, Z=${message.z}`);
             if(this.electronService.isElectron){
-              if(this.toggleMousePoss){
+              if(this.toggleMousePos){
                 this.electronService.electronAPI.moveCursorTo(message.x! , message.y!);
-              }else if(this.toggleEventHandlingg){//Mover CANVAS con sensores
+              }else if(this.toggleEventHandling){//Mover CANVAS con sensores
                //Localmente emito un subjectpara ACIGDATA... (Al cual, me subscribo en real-express.component.ts)
-                this.websocketService.emitAccelerometerData(message.x, message.y, message.z);
+                this.websocketService.sendAccelerometerData(message.x, message.y, message.z);
               }
             }
           }              
               break;
 
-          case 'AccelerometerIncludingGravity':   if (this.toggleAccelerometerIncludingGravityy && message.x && message.y && message.z) {
+          case 'AccelerometerIncludingGravity':   if (this.toggleAccelerometerIncludingGravity && message.x && message.y && message.z) {
             console.log('ACELERGRAV:', message.x, message.y, message.z );
             if(this.electronService.isElectron){
-              if(this.toggleMousePoss){
+              if(this.toggleMousePos){
                 this.electronService.electronAPI.moveCursorTo(message.x!, message.y!);
-              }else if(this.toggleEventHandlingg){//Mover CANVAS con sensores
+              }else if(this.toggleEventHandling){//Mover CANVAS con sensores
                 //Localmente emito un subjectpara ACIGDATA... (Al cual, me subscribo en real-express.component.ts)
-                this.websocketService.emitAccelerometerIncludingGravityData(message.x, message.y, message.z);
+                this.websocketService.sendAccelerometerIncludingGravityData(message.x, message.y, message.z);
               }
             }
           }          
@@ -173,28 +165,6 @@ export class AppComponent implements OnInit, OnDestroy {
       });
     }
 
-    // Estas subscripciones las hago en real-express
-    // this.websocketService.accelerometerData.subscribe(({ x, y, z }) => {
-    //   console.log(`Accelerometer data: X=${x}, Y=${y}, Z=${z}`);
-    //   if(this.toggleEventHandlingg){
-    //     this.websocketService.emitAccelerometerData(x, y, z);
-    //   }
-    // });
-    // this.websocketService.accelerometerIncludingGravityData.subscribe(({ x, y, z }) => {
-    //   console.log(`Accelerometer data: X=${x}, Y=${y}, Z=${z}`);
-    //   if(this.toggleEventHandlingg){
-    //     this.websocketService.emitAccelerometerIncludingGravityData(x, y, z);
-    //   }
-    // });
-    // this.websocketService.gyroscopeData.subscribe(({ alpha, beta, gamma }) => {
-    //   console.log(`Gyroscope data: alpha=${alpha}, beta=${beta}, gamma=${gamma}`);
-    //   if(this.toggleEventHandlingg){
-    //     this.websocketService.emitGyroscopeData(alpha, beta, gamma);
-    //   }
-    // });
-    // this.websocketService.toggleRemoteClick.subscribe(enabled => {
-      // this.toggleRemoteClick$ = this.websocketService.toggleRemoteClick.asObservable();   
-    //  });
   }
   async generateQRCode(ipAddress: string) {
     if (this.electronService.isElectron) {
@@ -222,9 +192,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.removeDeviceEventListeners();
   }
 
-  initializeWebSocketConnection(): void {
-    this.websocketService.connect('192.168.0.147:443');
-  }
 
   sendMessage(): void {
     const message = { tipo: 'message', message: 'Hi from Angular client' };
@@ -232,52 +199,44 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
    // Method to toggle remote click behavior
-   public toggleRemoteClick(): void {
-    // this.enableRemoteClick$ = !this.enableRemoteClick$;
-    // this.websocketService.toggleRemoteClick.emit(this.enableRemoteClick)
+   public toggleRemoteClickHandling(): void {
     this.store.dispatch(AppActions.toggleRemoteClickHandling());
   }
 
   // Method to toggle event handling behavior
-  public toggleEventHandling(): void {
-    // this.enableEventHandling = !this.enableEventHandling;
+  public toggleEventHandlingCanvas(): void {
     this.store.dispatch(AppActions.toggleEventHandling());
-    // Implement logic to enable/disable event handling based on this flag
   }
 
   // Add methods to toggle specific event handling (accelerometer, gyroscope, etc.)
   public toggleAccelerometerHandling(): void {
-    // this.handleAccelerometer$ = !this.handleAccelerometer$;
     this.store.dispatch(AppActions.toggleAccelerometerHandling());
-  
-    // Add logic to enable/disable accelerometer event handling
   }
   public toggleAccelerometerIncludingGravityHandling(): void {
-    // this.handleAccelerometerIncludingGravity$ = !this.handleAccelerometerIncludingGravity$;
     this.store.dispatch(AppActions.toggleAccelerometerIncludingGravityHandling());
   }
   public toggleGyroscopeHandling(): void {
-    // this.handleGyroscope$ = !this.handleGyroscope$;
     this.store.dispatch(AppActions.toggleGyroscopeHandling());
   }
   public toggleClickHandling(): void {
-    // this.handleClick$ = !this.handleClick$;
     this.store.dispatch(AppActions.toggleClickHandling());
   }
   public toggleMousePosHandling(): void {
-    // this.handleMousePos$ = !this.handleMousePos$;
     this.store.dispatch(AppActions.toggleMousePosHandling());
   }
-  public toggleClientEventHandling(): void {
+  public toggleShowCanvasClientHandling(): void {
     if (this.electronService.isElectron) {
       this.store.dispatch(AppActions.toggleClientEventHandling());
-      // this.websocketService.emitHandleClientEvent(this.handleClientEvent); // Emit true when the button is clicked
     }
   }
 
+  public toggleSensorDataHandling(): void {
+    this.isSensorDataHandlingEnabled = !this.isSensorDataHandlingEnabled;
+    this.isSensorDataHandlingEnabled ? this.addDeviceEventListeners() : this.removeDeviceEventListeners();
+  }
 
   addDeviceEventListeners(): void {
-    if(!this.electronService.isElectron){
+    if(!this.electronService.isElectron && this.isSensorDataHandlingEnabled){
     window.addEventListener('deviceorientation', this.handleOrientation.bind(this), true);
     window.addEventListener('devicemotion', this.handleMotion.bind(this), true);
     if (typeof (DeviceMotionEvent as any).requestPermission === 'function') {
@@ -308,15 +267,15 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   handleOrientation(event: DeviceOrientationEvent): void {
-    if(!this.electronService.isElectron){
-    if ( this.toggleGyroscopee) {
+    if(!this.electronService.isElectron && this.isSensorDataHandlingEnabled){
+    if (this.toggleGyroscope) {
       const payload = {
         tipo: 'Gyroscope',
         alpha: event.alpha,
         beta: event.beta,
         gamma: event.gamma
       };
-      if (this.toggleMousePoss || this.toggleEventHandlingg){
+      if (this.toggleMousePos || this.toggleEventHandling){
         this.websocketService.sendMessage(payload);
       }
     }
@@ -325,26 +284,26 @@ export class AppComponent implements OnInit, OnDestroy {
 
   handleMotion(event: DeviceMotionEvent): void {
 
-    if(!this.electronService.isElectron){
+    if(!this.electronService.isElectron && this.isSensorDataHandlingEnabled){
 
-      if (event.accelerationIncludingGravity && this.toggleAccelerometerIncludingGravityy) {
+      if (event.accelerationIncludingGravity && this.toggleAccelerometerIncludingGravity) {
         const payload = {
           tipo: 'AccelerometerIncludingGravity',
           x: event.accelerationIncludingGravity.x,
           y: event.accelerationIncludingGravity.y,
           z: event.accelerationIncludingGravity.z
         };
-        if(this.toggleMousePoss || this.toggleEventHandlingg){
+        if(this.toggleMousePos || this.toggleEventHandling){
           this.websocketService.sendMessage(payload);
         }
-      } else if (event.acceleration && this.toggleAccelerometerr) {
+      } else if (event.acceleration && this.toggleAccelerometer) {
         const payload = {
           tipo: 'Accelerometer',
           x: event.acceleration.x,
           y: event.acceleration.y,
           z: event.acceleration.z
         };
-        if(this.toggleMousePoss || this.toggleEventHandlingg){
+        if(this.toggleMousePos || this.toggleEventHandling){
           this.websocketService.sendMessage(payload);
         }
       }
@@ -353,9 +312,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   @HostListener('document:mousemove', ['$event'])
   onMouseMove(event: MouseEvent): void {
-    if(!this.electronService.isElectron){
+    if(!this.electronService.isElectron && this.isSensorDataHandlingEnabled){
       event.preventDefault(); // Prevent any default action.
-      if (this.toggleMousePoss ) {
+      if (this.toggleMousePos ) {
         const payload = { tipo: 'MousePos', x: event.clientX, y: event.clientY };
         this.websocketService.sendMessage(payload);
       }
@@ -363,9 +322,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
   @HostListener('document:touchmove', ['$event'])
   onTouchMove(event: TouchEvent): void {
-    if(!this.electronService.isElectron){
+    if(!this.electronService.isElectron && this.isSensorDataHandlingEnabled){
       event.preventDefault(); // Prevent any default action.
-      if (this.toggleMousePoss) {
+      if (this.toggleMousePos) {
         const payload = { tipo: 'MousePos', x: event.touches[0].clientX, y: event.touches[0].clientY };
         this.websocketService.sendMessage(payload);
       }
@@ -374,14 +333,14 @@ export class AppComponent implements OnInit, OnDestroy {
   
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent): void {
-    if(!this.electronService.isElectron){
+    if(!this.electronService.isElectron && this.isSensorDataHandlingEnabled){
       // event.preventDefault(); // Prevent any default action.
-      if (this.toggleClickk) {
+      if (this.toggleClick) {
         const payload = { tipo: 'Click', x: event.clientX, y: event.clientY };
         console.log('CLICKRegistered', payload)
         this.websocketService.sendMessage(payload);
         
-        if (this.toggleRemoteClickk) {
+        if (this.toggleRemoteClick) {
           // this.websocketService.emitClick(event.clientX, event.clientY);
         }
       }

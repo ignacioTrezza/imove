@@ -12,6 +12,7 @@ export const toggleMousePosHandling = createAction('[App Component] Handle Mouse
 export const toggleClientEventHandling = createAction('[App Component] Handle Client Event');
 export const setMovementMode = createAction('[App Component] Set Movement Mode', props<{ mode: movementMode }>());
 
+
 // export const handleMouseWheel = createAction('[App Component] Handle Mouse Wheel');
 // export const handleMouseMove = createAction('[App Component] Handle Mouse Move');
 // export const handleMouseDown = createAction('[App Component] Handle Mouse Down');
@@ -20,4 +21,5 @@ export const setMovementMode = createAction('[App Component] Set Movement Mode',
 // export const handleMouseLeave = createAction('[App Component] Handle Mouse Leave');
 // export const handleMouseOver = createAction('[App Component] Handle Mouse Over');
 // export const handleMouseOut = createAction('[App Component] Handle Mouse Out');
+
 

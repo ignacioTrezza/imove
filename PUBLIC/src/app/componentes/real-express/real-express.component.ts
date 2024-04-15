@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
-import { BehaviorSubject, Subject, Subscription, takeUntil } from 'rxjs';
 import { WebsocketService } from '../../services/web-socket.service';
 import * as THREE from 'three';
 import { Store, select } from '@ngrx/store';
@@ -8,6 +7,7 @@ import { ElectronService } from '../../services/electron.service';
 import * as AppSelectors from '../../core/store/selectors/app.selectors';
 import { movementMode } from '../../core/interfaces/sensor.interfaces';
 import * as AppActions from '../../core/store/actions/app.actions';
+import { signal } from '@angular/core';
 
 @Component({
   selector: 'app-real-express',
@@ -18,7 +18,7 @@ import * as AppActions from '../../core/store/actions/app.actions';
 export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
 
   currentMode: 'cubeRotation' | 'cubePosition' | 'sceneRotation' | 'scenePosition' | 'cameraRotation' | 'cameraPosition' | null = 'cubeRotation';
-
+  private boundHandleKeyDown: any;
   private prevAccelIncludingGravityX: number = 0;
   private prevAccelIncludingGravityY: number = 0;
   private prevAccelIncludingGravityZ: number = 0;
@@ -31,6 +31,10 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
   private prevGyroscopeBeta: number = 0;
   private prevGyroscopeGamma: number = 0;
 
+  public gyroAlpha: number = 0;
+  public gyroBeta: number = 0;
+  public gyroGamma: number = 0;
+
   toggleRemoteClick: boolean = false;
   toggleEventHandling: boolean = false;
   toggleAccelerometer: boolean = false;
@@ -40,29 +44,15 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
   toggleMousePos: boolean = false;
   toggleClientEventHandling: boolean = false
 
-  public accelSubscription!: Subscription;
-  public gyroSubscription!: Subscription;
-  public accelIncludingGravitySubscription!: Subscription;
-  public processedPointerSubscription!: Subscription;
+  // Corrected signal subscriptions
 
-  public gyroAlpha$ = new BehaviorSubject<number>(0);
-  public gyroBeta$ = new BehaviorSubject<number>(0);
-  public gyroGamma$ = new BehaviorSubject<number>(0);
+  public accelX = this.websocketService.accelerometerDataSignal;
+  public accelY = this.websocketService.accelerometerDataSignal;
+  public accelZ = this.websocketService.accelerometerDataSignal;
 
-  public accelX$ = new BehaviorSubject<number>(0);
-  public accelY$ = new BehaviorSubject<number>(0);
-  public accelZ$ = new BehaviorSubject<number>(0);
-
-  public accelIncludingGravityX$ = new BehaviorSubject<number>(0);
-  public accelIncludingGravityY$ = new BehaviorSubject<number>(0);
-  public accelIncludingGravityZ$ = new BehaviorSubject<number>(0);
-
-  public newX$ = new BehaviorSubject<number>(0);
-  public newY$ = new BehaviorSubject<number>(0);
-  public newZ$ = new BehaviorSubject<number>(0);
-  // public toggleClientEventHandling$ = new BehaviorSubject<boolean>(false);
-
-
+  public accelIncludingGravityX = this.websocketService.accelerometerIncludingGravityDataSignal;
+  public accelIncludingGravityY = this.websocketService.accelerometerIncludingGravityDataSignal;
+  public accelIncludingGravityZ = this.websocketService.accelerometerIncludingGravityDataSignal;
 
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
@@ -76,17 +66,36 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
   private previousY: number = 0;
   public importedCubes: THREE.Mesh[] = [];
 
-  private destroy$ = new Subject<void>();
-
   constructor(
     private store: Store<AppState>,
     private websocketService: WebsocketService,
     private electronService: ElectronService
-  ) { }
+  ) {
+    this.boundHandleKeyDown = this.handleKeyDown.bind(this);
+  
+   }
 
   ngOnInit(): void {
     this.initThree();
     this.initializeStoreEvents();
+    this.subscribeToGyroscopeData();
+    document.addEventListener('keydown', this.boundHandleKeyDown)
+  }
+
+  private subscribeToGyroscopeData(): void {
+    this.websocketService.gyroscopeData$.subscribe(({ alpha, beta, gamma }) => {
+    console.log('Gyroscope',` data: alpha=${alpha}, beta=${beta}, gamma=${gamma}`);
+    this.prevGyroscopeAlpha = alpha;
+    this.prevGyroscopeBeta = beta;
+    this.prevGyroscopeGamma = gamma;
+    this.updateObjectRotation(alpha, beta, gamma);
+    });
+    }
+
+  private updateObjectRotation(alpha: number, beta: number, gamma: number): void {
+    this.cube.rotation.x = alpha*(Math.PI / 180); 
+    this.cube.rotation.y = beta * (Math.PI / 180); 
+    this.cube.rotation.z = gamma * (Math.PI / 180);
   }
 
   initializeStoreEvents() {
@@ -99,101 +108,18 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.store.pipe(select(AppSelectors.selectToggleEventHandling)).subscribe(toggleEventHandling => {
         this.toggleEventHandling = toggleEventHandling;
-        // if (this.toggleEventHandling === true) {
-          // console.log('EVENT HANDLING11', this.toggleEventHandling);
-
-        //   let parsedData = { x: 0, y: 0, z: 0 };
-
-        //   if (this.toggleAccelerometer === true) {
-        //     parsedData = { ...parsedData, x: this.accelX$.value, y: this.accelY$.value, z: this.accelZ$.value }
-        //   }
-        //   if (this.toggleAccelerometerIncludingGravity === true) {
-        //     parsedData = { ...parsedData, x: this.accelIncludingGravityX$.value, y: this.accelIncludingGravityY$.value, z: this.accelIncludingGravityZ$.value }
-        //   }
-        //   if (this.toggleGyroscope === true) {
-        //     parsedData = { ...parsedData, x: this.gyroAlpha$.value, y: this.gyroBeta$.value, z: this.gyroGamma$.value }
-        //   }
-        //   console.log('VALUE:', this.cube.position.x, this.cube.position.y, this.cube.position.z);
-
-        //   if (parsedData.x !== null && parsedData.y !== null && parsedData.z !== null) {
-
-        //     const deltaX = parsedData.x - this.prevAccelIncludingGravityX;
-        //     const deltaY = parsedData.y - this.prevAccelIncludingGravityY;
-
-        //     this.switchMode(this.currentMode, deltaX, deltaY);
-
-        //     this.prevAccelIncludingGravityX = parsedData.x;
-        //     this.prevAccelIncludingGravityY = parsedData.y;
-
-        //   } else {
-        //     console.log('XYZ:', parsedData.x, parsedData.y, parsedData.z, this.cube.position.x, this.cube.position.y, this.cube.position.z);
-        //   }
-        // }
       });
 
       this.store.pipe(select(AppSelectors.selectToggleGyroscope)).subscribe(toggleGyroscope => {
         this.toggleGyroscope = toggleGyroscope;
-        if (this.toggleGyroscope === true) {
-          this.gyroSubscription = this.websocketService.gyroscopeData.subscribe(({ alpha, beta, gamma }) => {
-            console.log(`Gyroscope: alpha=${alpha}, beta=${beta}, gamma=${gamma}`);
-            const deltaX = alpha - this.previousX;
-            const deltaY = beta - this.previousY;
-
-            this.switchMode(this.currentMode, deltaX, deltaY);
-
-            this.previousX = alpha;
-            this.previousY = beta;
-            // this.previousZ = gamma;
-            // Handle gyroscope data
-          });
-        } else {
-          if (this.gyroSubscription) {
-            this.gyroSubscription.unsubscribe();
-          }
-        }
       });
 
       this.store.pipe(select(AppSelectors.selectToggleAccelerometer)).subscribe(toggleAccelerometer => {
         this.toggleAccelerometer = toggleAccelerometer;
-        if (this.toggleAccelerometer === true) {
-          this.accelSubscription = this.websocketService. accelerometerData.subscribe(({ x, y, z }) => {
-            console.log(`Accelerometer en real-express160: x=${x}, y=${y}, z=${z} `);
-            const deltaX = x - this.previousX;
-            const deltaY = y - this.previousY;
-
-            this.switchMode(this.currentMode, deltaX, deltaY);
-
-            this.previousX = x;
-            this.previousY = y;
-            // this.previousZ = z;
-            // Handle accelerometer data
-          });
-        } else {
-          if (this.accelSubscription) {
-            this.accelSubscription.unsubscribe();
-          }
-        }
       });
 
       this.store.pipe(select(AppSelectors.selectToggleAccelerometerIncludingGravity)).subscribe(toggleAccelerometerIncludingGravity => {
         this.toggleAccelerometerIncludingGravity = toggleAccelerometerIncludingGravity;
-        if (this.toggleAccelerometerIncludingGravity === true) {
-          this.accelIncludingGravitySubscription = this.websocketService.accelerometerIncludingGravityData
-            .subscribe(({ x, y, z }) => {
-              console.log(`Accelerometer Including Gravity: x=${x}, y=${y}, z=${z}`);
-              const deltaX = x - this.previousX;
-              const deltaY = y - this.previousY;
-  
-              this.switchMode(this.currentMode, deltaX, deltaY);
-  
-              this.previousX = x;
-              this.previousY = y;
-            })
-        } else {
-          if (this.accelIncludingGravitySubscription) {
-            this.accelIncludingGravitySubscription.unsubscribe();
-          }
-        }
       });
 
       this.store.pipe(select(AppSelectors.selectToggleClientEventHandling)).subscribe(toggleClientEventHandling => {
@@ -217,9 +143,9 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
     document.removeEventListener('mouseup', this.mouseUpListener);
     document.removeEventListener('mousedown', this.mouseDownListener);
     document.removeEventListener('mousemove', this.mouseMoveListener);
+    document.removeEventListener('keydown', this.boundHandleKeyDown);
+   
 
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   ngAfterViewInit(): void {
@@ -361,3 +287,4 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log(`Mode set to: ${mode}`);
   }
 }
+

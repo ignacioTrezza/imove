@@ -12,28 +12,25 @@ import { RealExpressComponent } from './componentes/real-express/real-express.co
 import { EffectsModule } from '@ngrx/effects';
 import { AppEffects } from './core/store/effects/app.effect';
 import { GyroscopeDisplayComponent } from './componentes/gyroscope-display/gyroscope-display.component';
+import { AppRoutingModule } from './app-routing.module';
+import { MoveModule } from './move/move/move.module';
 
 @NgModule({
     declarations: [
         AppComponent, 
-        AccelerometerDisplayComponent,
-        AccelerometerIncludingGravityDisplayComponent,        
-        RealExpressComponent,
-        GyroscopeDisplayComponent
     ],
     imports: [
-        BrowserModule,
-        StoreModule.forRoot({ app: appReducer }, { metaReducers }),
         CommonModule,
+        BrowserModule,
+        AppRoutingModule,
+        StoreModule.forRoot({ app: appReducer }, { metaReducers }),      
+        EffectsModule.forRoot([AppEffects]),   
         FormsModule,
-        ReactiveFormsModule,
-        EffectsModule.forRoot([AppEffects])
+        ReactiveFormsModule,  
+           
+        // EffectsModule.forRoot([AppEffects])
     ],
     exports: [
-        RealExpressComponent,        
-        AccelerometerDisplayComponent,
-        AccelerometerIncludingGravityDisplayComponent,
-        GyroscopeDisplayComponent
     ],
     providers: [
         DecimalPipe // Provide DecimalPipe if it's being injected

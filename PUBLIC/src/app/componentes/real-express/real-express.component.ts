@@ -126,7 +126,7 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
         this.toggleClientEventHandling = toggleClientEventHandling;
       });
       this.store.pipe(select(AppSelectors.selectSetMovementMode)).subscribe(setMovementMode => {
-        this.currentMode = setMovementMode;
+        this.currentMode = setMovementMode as 'cubeRotation' | 'cubePosition' | 'sceneRotation' | 'scenePosition' | 'cameraRotation' | 'cameraPosition' | null;
       });
     }
   

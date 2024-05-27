@@ -6,39 +6,39 @@ export const selectFeature = createFeatureSelector<AppState>('app');
 
 export const selectToggleRemoteClick = createSelector(
   selectFeature,
-  (state: AppState) => state.toggleRemoteClick
+  (state: AppState) => state.canvasHandling.remoteClick
 );
 export const selectToggleEventHandling = createSelector(
   selectFeature,
-  (state: AppState) => state.toggleEventHandling
+  (state: AppState) => state.canvasHandling.eventHandlingCanvas
 );
 export const selectToggleAccelerometer = createSelector(
   selectFeature,
-  (state: AppState) => state.toggleAccelerometer
+  (state: AppState) => state.sensorHandling.accelerometer
 );
 export const selectToggleAccelerometerIncludingGravity = createSelector(
   selectFeature,
-  (state: AppState) => state.toggleAccelerometerIncludingGravity
+  (state: AppState) => state.sensorHandling.accelerometerIncludingGravity
 );
 export const selectToggleGyroscope = createSelector(
   selectFeature,
-  (state: AppState) => state.toggleGyroscope
+  (state: AppState) => state.sensorHandling.gyroscope
 );
 export const selectToggleClick = createSelector(
   selectFeature,
-  (state: AppState) => state.toggleClick
+  (state: AppState) => state.sensorHandling.click
 );
 export const selectToggleMousePos = createSelector(
   selectFeature,
-  (state: AppState) => state.toggleMousePos
+  (state: AppState) => state.sensorHandling.processedPointer
 );
 export const selectToggleClientEventHandling = createSelector(
   selectFeature,
-  (state: AppState) => state.toggleClientEventHandling
+  (state: AppState) => state.canvasHandling.showCanvas
 );
 export const selectSetMovementMode = createSelector(
   selectFeature,
-  (state: AppState) => state.setMovementMode
+  (state: AppState) => state.otherHandling.setMovementMode
 );
 export const selectFeatureState = createFeatureSelector<FeatureState>('featureKey');
 

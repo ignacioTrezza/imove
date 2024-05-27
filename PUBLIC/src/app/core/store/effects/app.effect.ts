@@ -20,10 +20,10 @@ export class AppEffects {
   toggleRemoteClick$ = createEffect(() => 
     this.actions$.pipe(
       ofType(AppActions.toggleRemoteClickHandling),
-      withLatestFrom(this.store.pipe(select(state => state.toggleRemoteClick))),
+      withLatestFrom(this.store.pipe(select(state => state.canvasHandling.remoteClick))),
       tap(([action, toggleRemoteClickHandling]) => {
         // this.toggleRemoteClick = !toggleRemoteClickHandling;
-        this.websocketService.toggleRemoteClick.emit(this.toggleRemoteClick);
+        // this.websocketService.toggleRemoteClick.emit(this.toggleRemoteClick);
 
       })
     ),
@@ -33,7 +33,7 @@ export class AppEffects {
   toggleEventHandling$ = createEffect(() => 
   this.actions$.pipe(
     ofType(AppActions.toggleEventHandling),
-    withLatestFrom(this.store.pipe(select(state => state.toggleEventHandling))),
+    withLatestFrom(this.store.pipe(select(state => state.sensorHandling.eventHandlingCanvas))),
     tap(([action, toggleEventHandling]) => {
       // this.enableRemoteClick = !toggleRemoteClick;
       // this.websocketService.toggleEventHandling.emit(this.enableRemoteClick);
@@ -45,7 +45,7 @@ export class AppEffects {
 toggleAccelerometerHandling$ = createEffect(() => 
 this.actions$.pipe(
   ofType(AppActions.toggleAccelerometerHandling),
-  withLatestFrom(this.store.pipe(select(state => state.toggleAccelerometer))),
+  withLatestFrom(this.store.pipe(select(state => state.sensorHandling.accelerometer))),
   tap(([action, toggleAccelerometer]) => {
     // this.enableRemoteClick = !toggleRemoteClick;
     // this.websocketService.toggleEventHandling.emit(this.enableRemoteClick);
@@ -57,7 +57,7 @@ this.actions$.pipe(
 handleAccelerometerIncludingGravity$ = createEffect(() => 
 this.actions$.pipe(
   ofType(AppActions.toggleAccelerometerIncludingGravityHandling),
-  withLatestFrom(this.store.pipe(select(state => state.toggleAccelerometerIncludingGravity))),
+  withLatestFrom(this.store.pipe(select(state => state.sensorHandling.accelerometerIncludingGravity))),
   tap(([action, toggleAccelerometerIncludingGravity]) => {
     // this.enableRemoteClick = !toggleRemoteClick;
     // this.websocketService.toggleEventHandling.emit(this.enableRemoteClick);
@@ -69,7 +69,7 @@ this.actions$.pipe(
 handleGyroscope$ = createEffect(() => 
 this.actions$.pipe(
   ofType(AppActions.toggleGyroscopeHandling),
-  withLatestFrom(this.store.pipe(select(state => state.toggleGyroscope))),
+  withLatestFrom(this.store.pipe(select(state => state.sensorHandling.gyroscope))),
   tap(([action, toggleGyroscope]) => {
     // this.enableRemoteClick = !toggleRemoteClick;
     // this.websocketService.toggleEventHandling.emit(this.enableRemoteClick);
@@ -81,7 +81,7 @@ this.actions$.pipe(
 handleClick$ = createEffect(() => 
 this.actions$.pipe(
   ofType(AppActions.toggleClickHandling),
-  withLatestFrom(this.store.pipe(select(state => state.toggleClick))),
+  withLatestFrom(this.store.pipe(select(state => state.sensorHandling.click))),
   tap(([action, toggleClick]) => {
     // this.enableRemoteClick = !toggleRemoteClick;
     // this.websocketService.toggleEventHandling.emit(this.enableRemoteClick);
@@ -94,7 +94,7 @@ this.actions$.pipe(
 handleMousePos$ = createEffect(() => 
 this.actions$.pipe(
   ofType(AppActions.toggleMousePosHandling),
-  withLatestFrom(this.store.pipe(select(state => state.toggleMousePos))),
+  withLatestFrom(this.store.pipe(select(state => state.sensorHandling.processedPointer))),
   tap(([action, toggleMousePos]) => {
     // this.enableRemoteClick = !toggleRemoteClick;
     // this.websocketService.toggleEventHandling.emit(this.enableRemoteClick);
@@ -106,7 +106,7 @@ this.actions$.pipe(
 handleClientEvent$ = createEffect(() => 
 this.actions$.pipe(
   ofType(AppActions.toggleClientEventHandling),
-  withLatestFrom(this.store.pipe(select(state => state.toggleClientEventHandling))),
+  withLatestFrom(this.store.pipe(select(state => state.canvasHandling.showCanvas))),
   tap(([action, toggleClientEventHandling]) => {
     // this.enableRemoteClick = !toggleRemoteClick;
     // this.websocketService.toggleEventHandling.emit(this.enableRemoteClick);
@@ -115,17 +115,17 @@ this.actions$.pipe(
 ),
 { dispatch: false }
 );
-setMovementMode$ = createEffect(() => 
-this.actions$.pipe(
-  ofType(AppActions.setMovementMode),
-  withLatestFrom(this.store.pipe(select(state => state.setMovementMode))),
-  tap(([action, setMovementMode]) => {
-    // this.enableRemoteClick = !toggleRemoteClick;
-    // this.websocketService.toggleEventHandling.emit(this.enableRemoteClick);
+// setMovementMode$ = createEffect(() => 
+// this.actions$.pipe(
+//   ofType(AppActions.setMovementMode),
+//   withLatestFrom(this.store.pipe(select(state => state.setMovementMode))),
+//   tap(([action, setMovementMode]) => {
+//     // this.enableRemoteClick = !toggleRemoteClick;
+//     // this.websocketService.toggleEventHandling.emit(this.enableRemoteClick);
 
-  })
-),
-{ dispatch: false }
-);
+//   })
+// ),
+// { dispatch: false }
+// );
 }
 

@@ -22,4 +22,4 @@ export class WebSocketEffects {
     ofType(WebSocketActions.disconnectWebSocket),
     tap(() => this.websocketService.disconnect())
   ), { dispatch: false });
-}
+  }

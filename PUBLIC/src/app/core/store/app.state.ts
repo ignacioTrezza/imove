@@ -90,9 +90,75 @@ export interface WebSocketState {
   isConnected: boolean;
   data: any; // Define more specific type if possible
 }
-
+export interface SensorHandlingState {
+  remoteClick: boolean;
+  eventHandlingCanvas: boolean;
+  accelerometer: boolean;
+  accelerometerIncludingGravity: boolean;
+  gyroscope: boolean;
+  click: boolean;
+  processedPointer: boolean;
+}
+export interface canvasHandling {
+  remoteClick: boolean;
+  eventHandlingCanvas: boolean;
+  showCanvas: boolean;
+}
+export interface otherHandling {
+  toggleEventHandling: boolean
+  toggleAccelerometer: boolean
+  toggleAccelerometerIncludingGravity: boolean
+  toggleGyroscope: boolean
+  toggleClick: boolean
+  toggleMousePos: boolean
+  setMovementMode: string
+}
 export interface AppState {
-  canvas: CanvasState;
+  // canvas: CanvasState;
   user: UserState;
   websocket: WebSocketState;
+  sensorHandling: SensorHandlingState;
+  canvasHandling: canvasHandling;
+  otherHandling: otherHandling;
+
 }
+export const initialState: AppState = {
+  // canvas: {
+  //   objects: [] // Assuming an empty array as the default state
+  // },
+  user: {
+    id: 0, // Assuming default ID as 0
+    username: '', // Default empty username
+    email: '', // Default empty email, optional but providing default
+    origin: {}, // Assuming an empty object as default
+    ownFeatures: [{ eventName: "", enviaOn: false, recibeOn: false }],
+    availableFeatures: [{ eventName: "", enviaOn: false, recibeOn: false }]
+  },
+  websocket: {
+    isConnected: false,
+    data: {} // Assuming an empty object as default data
+  },
+  sensorHandling: {
+    remoteClick: false,
+    eventHandlingCanvas: false,
+    accelerometer: false,
+    accelerometerIncludingGravity: false,
+    gyroscope: false,
+    click: false,
+    processedPointer: false
+  },
+  canvasHandling: {
+    remoteClick: false,
+    eventHandlingCanvas: false,
+    showCanvas: false
+  },
+  otherHandling: {
+    toggleEventHandling: false,
+    toggleAccelerometer: false,
+    toggleAccelerometerIncludingGravity: false,
+    toggleGyroscope: false,
+    toggleClick: false,
+    toggleMousePos: false,
+    setMovementMode: 'default' // Assuming 'default' as a placeholder mode
+  }
+};

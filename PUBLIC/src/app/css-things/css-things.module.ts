@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CssThingsRoutingModule } from './css-things-routing.module';
 import { CssThingsComponent } from './css-things.component';
@@ -10,7 +10,6 @@ import { BrowserModule } from '@angular/platform-browser';
     CssThingsComponent,
     ZIndex1Component
   ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     CommonModule,
     BrowserModule,

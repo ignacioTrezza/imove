@@ -11,6 +11,7 @@ export class ZIndex1Component {
   constructor(private router: Router) { }
 
   navigateToZIndex1() {
-    this.router.navigateByUrl('/css-things/z-index-1');
+    this.router.navigateByUrl('/css-things');
   }
+
 }

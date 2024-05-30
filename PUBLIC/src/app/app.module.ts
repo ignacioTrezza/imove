@@ -27,7 +27,7 @@ import { MoveModule } from './move/move/move.module';
         EffectsModule.forRoot([AppEffects]),   
         FormsModule,
         ReactiveFormsModule,  
-           
+        MoveModule
         // EffectsModule.forRoot([AppEffects])
     ],
     exports: [

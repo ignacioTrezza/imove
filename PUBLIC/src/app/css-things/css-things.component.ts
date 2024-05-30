@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
   styleUrl: './css-things.component.scss'
 })
 export class CssThingsComponent {
+  items = [ 'hola', 'mundo', 'como', 'estas']
   constructor(private router: Router) { }
 
   

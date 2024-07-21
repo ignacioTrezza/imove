@@ -8,6 +8,7 @@ import * as AppSelectors from '../../core/store/selectors/app.selectors';
 import { movementMode } from '../../core/interfaces/sensor.interfaces';
 import * as AppActions from '../../core/store/actions/app.actions';
 import { signal } from '@angular/core';
+import { NgZone } from '@angular/core';
 
 @Component({
   selector: 'app-real-express',
@@ -69,11 +70,15 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private store: Store<AppState>,
     private websocketService: WebsocketService,
-    private electronService: ElectronService
+    private electronService: ElectronService,
+    private zone: NgZone
   ) {
     this.boundHandleKeyDown = this.handleKeyDown.bind(this);
-  
-   }
+    // Bind methods once in the constructor
+    this.mouseDownListener = this.mouseDownListener.bind(this);
+    this.mouseMoveListener = this.mouseMoveListener.bind(this);
+    this.mouseUpListener = this.mouseUpListener.bind(this);
+  }
 
   ngOnInit(): void {
     this.initThree();
@@ -180,7 +185,7 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
       this.scene.add(cube);
     }
     this.scene.add(this.cube);
-    this.camera.position.z = 100;
+    this.camera.position.z = 10;
     const axisX = new THREE.Mesh(new THREE.BoxGeometry(10, 0.1, 0.1), new THREE.MeshBasicMaterial({ color: 0xffaafff }));
     const axisY = new THREE.Mesh(new THREE.BoxGeometry(0.1, 10, 0.1), new THREE.MeshBasicMaterial({ color: 0xffbbff }));
     const axisZ = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 10), new THREE.MeshBasicMaterial({ color: 0xffccff }));
@@ -208,11 +213,8 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isDragging = true;
     this.previousX = event.clientX;
     this.previousY = event.clientY;
-    document.addEventListener('mouseup', this.mouseUpListener);
-
   };
   private mouseMoveListener = (event: MouseEvent) => {
-
     if (this.isDragging) {
       const deltaX = event.clientX - this.previousX;
       const deltaY = event.clientY - this.previousY;
@@ -221,28 +223,22 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.previousX = event.clientX;
       this.previousY = event.clientY;
-
     }
-
   };
   private handleClientEvent(status: boolean): void {
-
-    if (status == true) {
-      console.log('REMOTE CLICK ACTIVADO');
-
-      document.getElementById('threejs-container')!.addEventListener('mousedown', this.mouseDownListener);
-      document.addEventListener('mousemove', this.mouseMoveListener);
-      document.getElementById('threejs-container')!.addEventListener('contextmenu', (event) => {
-        event.preventDefault();
-      });
+    const container = document.getElementById('threejs-container');
+    if (status) {
+        console.log('REMOTE CLICK ACTIVADO');
+        container?.addEventListener('mousedown', this.mouseDownListener);
+        document.addEventListener('mousemove', this.mouseMoveListener);
+        document.addEventListener('mouseup', this.mouseUpListener);
+        container?.addEventListener('contextmenu', event => event.preventDefault());
     } else {
-      console.log('REMOTE CLICK DESACTIVADO');
-      document.removeEventListener('mousedown', this.mouseDownListener);
-      document.removeEventListener('mousemove', this.mouseMoveListener);
-      this.mouseUpListener
-
+        console.log('REMOTE CLICK DESACTIVADO');
+        container?.removeEventListener('mousedown', this.mouseDownListener);
+        document.removeEventListener('mousemove', this.mouseMoveListener);
+        document.removeEventListener('mouseup', this.mouseUpListener);
     }
-
   }
   switchMode(currentMode: any, deltaX: number, deltaY: number) {
     switch (currentMode) {
@@ -260,13 +256,12 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
       case 'scenePosition':
         this.scene.position.x += deltaX * 0.01;
-        this.scene.position.y += deltaY * -0.01;
+        this.scene.position.y -= deltaY * 0.01;
         break;
       case 'cameraRotation':
         this.camera.rotation.x += deltaX * -0.01;
         this.camera.rotation.y -= deltaY * -0.01;
         break;
-
       case 'cameraPosition':
         this.camera.position.x += deltaX * 0.01;
         this.camera.position.y -= deltaY * 0.01;
@@ -276,15 +271,10 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
         this.cube.rotation.y += deltaY * 0.005;
         console.log('Modo por defecto (cubeRotation) ACTIVADO.');
         break;
-
     }
-
-    return
-
   }
   setMode(mode: movementMode): void {
     this.currentMode = mode;
     console.log(`Mode set to: ${mode}`);
   }
 }
-

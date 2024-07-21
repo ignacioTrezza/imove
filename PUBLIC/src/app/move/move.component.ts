@@ -220,9 +220,9 @@ export class MoveComponent {
     this.store.dispatch(AppActions.toggleMousePosHandling());
   }
   public toggleShowCanvasClientHandling(): void {
-    if (this.electronService.isElectron) {
+    // if (this.electronService.isElectron) {
       this.store.dispatch(AppActions.toggleClientEventHandling());
-    }
+    // }
   }
 
   public toggleSensorDataHandling(): void {

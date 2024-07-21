@@ -26,6 +26,9 @@ const wss = new WebSocket.Server({ server }); // Attach WebSocket server to the 
 // Serve the PUBLIC folder on the /home route
 app.use('/', express.static(path.join(__dirname, 'PUBLIC/dist/client/browser')));
 
+// Serve static files from the PUBLIC directory
+app.use(express.static(path.join(__dirname, 'PUBLIC')));
+
 // WebSocket connection setup
 wss.on('connection', function connection(ws) {
     // console.log('OnConnection:', ws)

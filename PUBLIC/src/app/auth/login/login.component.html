@@ -1,0 +1,5 @@
+<form>
+  <input type="text" #username placeholder="Username" name="username" id="username" required>
+  <input type="password" #password placeholder="CurrentPassword" name="password" id="password" required>
+  <button type="submit" (click)="login(username.value, password.value)">Login</button>
+</form>

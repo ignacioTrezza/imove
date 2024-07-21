@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
 import { StoreModule } from '@ngrx/store';
 import { appReducer, metaReducers } from './core/store/reducers/app.reducer';
 import { AppComponent } from './app.component';
@@ -13,22 +12,30 @@ import { EffectsModule } from '@ngrx/effects';
 import { AppEffects } from './core/store/effects/app.effect';
 import { GyroscopeDisplayComponent } from './componentes/gyroscope-display/gyroscope-display.component';
 import { AppRoutingModule } from './app-routing.module';
-import { MoveModule } from './move/move/move.module';
+import { MoveModule } from './move/move.module';
+import { AuthModule } from './auth/auth.module';
+import { BrowserModule } from '@angular/platform-browser';
+import { LoginComponent } from './auth/login/login.component';
+import { RegisterComponent } from './auth/register/register.component';
+import { HttpClientModule } from '@angular/common/http';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { CssThingsModule } from './css-things/css-things.module';
 
 @NgModule({
     declarations: [
         AppComponent, 
+
     ],
     imports: [
-        CommonModule,
-        BrowserModule,
-        AppRoutingModule,
-        StoreModule.forRoot({ app: appReducer }, { metaReducers }),      
-        EffectsModule.forRoot([AppEffects]),   
+        BrowserModule,      
+        AppRoutingModule,  
         FormsModule,
-        ReactiveFormsModule,  
-        MoveModule
-        // EffectsModule.forRoot([AppEffects])
+        AuthModule,
+        DashboardModule,
+        HttpClientModule,
+        ReactiveFormsModule,
+        StoreModule.forRoot({ app: appReducer }, { metaReducers }),      
+        EffectsModule.forRoot([AppEffects]), 
     ],
     exports: [
     ],

@@ -1,0 +1,34 @@
+#dynamic-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e7e7e7;
+    transition: top 0.3s;
+  }
+  
+  #dynamic-header nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    text-align: center;
+  }
+  
+  #dynamic-header nav ul li {
+    display: inline;
+  }
+  
+  #dynamic-header nav ul li a {
+    text-decoration: none;
+    padding: 15px;
+    display: inline-block;
+  }
+  
+  body:hover #dynamic-header {
+    top: -50px; /* Adjust based on actual header height */
+  }
+  
+  body:hover #dynamic-header:hover {
+    top: 0;
+  }

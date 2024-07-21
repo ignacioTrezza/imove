@@ -1,7 +1,51 @@
 <h1>Z-Index 1</h1>
+<form [formGroup]="form">
+    <div class="form-control">
 
-    <div class="green-background" style="z-index: 1;"></div>
-
+        <label for="amplitude">Amplitude:</label>
+        <h4>{{ form.get('amplitude')?.value }}</h4>
+        <input type="range" id="amplitude" name="amplitude" min="0" max="1000" formControlName="amplitude" (change)="updateSineWave()">
+        <label for="frequency">Frequency:</label>
+        <h4>{{ form.get('frequency')?.value }}</h4>
+        <input type="range" id="frequency" name="frequency" min="0" max="50" formControlName="frequency" (change)="updateSineWave()">
+        <label for="points">Points:</label>
+        <h4>{{ form.get('points')?.value }}</h4>
+        <input type="range" id="points" name="points" min="0" max="1000" formControlName="points" (change)="updateSineWave()">
+        <label for="width">Width:</label>
+        <h4>{{ form.get('width')?.value }}</h4>
+        <input type="range" id="width" name="width" min="0" max="10" formControlName="width" (change)="updateSineWave()">
+        <label for="height">Height:</label>
+        <h4>{{ form.get('height')?.value }}</h4>
+        <input type="range" id="height" name="height" min="0" max="10" formControlName="height" (change)="updateSineWave()">
+        <label for="color">Color:</label>
+        <input [(colorPicker)]="currColor" id="color" [style.background]="currColor" 
+        (colorPickerChange)="form.get('color')?.setValue(currColor)"
+        formControlName="color" [cpAlphaChannel]="'enabled'"/>
+        <label for="rastro">Trail Effect:</label>
+        <input type="checkbox" id="rastro" name="rastro" formControlName="rastro">
+        <label for="addWave">Add Wave:</label>
+        <input type="checkbox" id="addWave" name="addWave" formControlName="addWave">
+    </div>
+</form>
+<div class="container-sine-wave">
+    <div *ngFor="let wave of functions; let i = index" (click)="selectWave(i)">
+        <div class="sine-wave" *ngFor="let point of wave.points; trackBy: trackByFn" [ngStyle]="{'left': point.x + '%', 
+                    'bottom': point.y + 'px', 
+                    'width': wave.settings.width + 'px', 
+                    'height': wave.settings.height + 'px',
+                    'background-color': wave.settings.color}">
+        </div>
+    </div>
+</div>
+<button (click)="addWave()">Add Wave</button>
+<!-- <div class="container-sine-wave">
+    <div class="sine-wave" *ngFor="let point of sineWavePoints" [ngStyle]="{'left': point.x + '%', 
+                'bottom': point.y + 'px', 
+                'width': form.value.width + 'px', 
+                'height': form.value.height + 'px',
+                'background-color': form.value.color}">
+    </div>
+</div> -->
 
 <!-- <div class="box-1">
     <div class="box-1-a">

@@ -1,11 +1,11 @@
 import { Component, HostListener } from '@angular/core';
-import { ElectronService } from '../../services/electron.service';
-import { WebsocketService } from '../../services/web-socket.service';
-import { AppState } from '../../core/store/app.state';
+import { ElectronService } from '../services/electron.service';
+import { WebsocketService } from '../services/web-socket.service';
+import { AppState } from '../core/store/app.state';
 
 import { Store, select } from '@ngrx/store';
-import * as AppActions from '../../core/store/actions/app.actions';
-import * as AppSelectors from '../../core/store/selectors/app.selectors';
+import * as AppActions from '../core/store/actions/app.actions';
+import * as AppSelectors from '../core/store/selectors/app.selectors';
 
 
 @Component({

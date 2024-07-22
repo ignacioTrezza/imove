@@ -1,0 +1,13 @@
+<div class="cube-controls">
+  <button (click)="addCube()">Add Cube</button>
+  <input type="number" [(ngModel)]="cubeX" placeholder="X Position">
+  <input type="number" [(ngModel)]="cubeY" placeholder="Y Position">
+  <input type="number" [(ngModel)]="cubeZ" placeholder="Z Position">
+  <input type="number" [(ngModel)]="cubeAmount" placeholder="Amount">
+  <input type="color" [(ngModel)]="cubeColor" placeholder="Color">
+  <select [(ngModel)]="cubeTexture">
+    <option value="basic">Basic</option>
+    <option value="phong">Phong</option>
+  </select>
+  <input type="number" [(ngModel)]="cubeSize" placeholder="Size">
+</div>

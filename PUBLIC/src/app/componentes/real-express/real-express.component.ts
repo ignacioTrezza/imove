@@ -10,6 +10,12 @@ import * as AppActions from '../../core/store/actions/app.actions';
 import { signal } from '@angular/core';
 import { NgZone } from '@angular/core';
 
+interface GeometryData {
+  type: 'scale' | 'segments';
+  scale?: number;
+  segments?: number;
+}
+
 @Component({
   selector: 'app-real-express',
   standalone: false,
@@ -66,6 +72,16 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
   private previousX: number = 0;
   private previousY: number = 0;
   public importedCubes: THREE.Mesh[] = [];
+
+  // New properties for cube controls
+  cubeX: number = 0;
+  cubeY: number = 0;
+  cubeZ: number = 0;
+  cubeAmount: number = 1;
+  cubeColor: string = '#ffffff';
+  cubeTexture: string = 'basic';
+  cubeSize: number = 1;
+  selectedObject: any;
 
   constructor(
     private store: Store<AppState>,
@@ -181,7 +197,7 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
       const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
       const cube = new THREE.Mesh(geometry, material);
       cube.position.y = Math.random() * 10;
-      cube.position.x = Math.random() * 10;
+      cube.position.x = 1 * 10;
       cube.position.z = Math.random() * 10;
       this.scene.add(cube);
     }
@@ -277,5 +293,121 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
   setMode(mode: movementMode): void {
     this.currentMode = mode;
     console.log(`Mode set to: ${mode}`);
+  }
+
+  // Method to add cubes
+  addCube(): void {
+    const materialOptions = {
+      'basic': new THREE.MeshBasicMaterial({ color: this.cubeColor }),
+      'phong': new THREE.MeshPhongMaterial({ color: this.cubeColor })
+    };
+
+    const geometry = new THREE.BoxGeometry(this.cubeSize, this.cubeSize, this.cubeSize);
+    const material = materialOptions[this.cubeTexture as keyof typeof materialOptions];
+
+    for (let i = 0; i < this.cubeAmount; i++) {
+      const cube = new THREE.Mesh(geometry, material);
+      cube.position.set(this.cubeX, this.cubeY, this.cubeZ);
+      this.scene.add(cube);
+      this.importedCubes.push(cube); // Assuming you want to keep track of these
+    }
+  }
+  handleCubeAdded(cubeData: any): void {
+    const materialOptions = {
+      'basic': new THREE.MeshBasicMaterial({ color: cubeData.color }),
+      'phong': new THREE.MeshPhongMaterial({ color: cubeData.color })
+    };
+  
+    const geometry = new THREE.BoxGeometry(cubeData.size, cubeData.size, cubeData.size);
+    const material = materialOptions[cubeData.texture as keyof typeof materialOptions];
+    const cube = new THREE.Mesh(geometry, material);
+    cube.position.set(cubeData.x, cubeData.y, cubeData.z);
+    this.scene.add(cube);
+    this.importedCubes.push(cube);
+  }
+
+  handleModeChanged(newMode: movementMode) {
+    this.currentMode = newMode;
+  }
+
+  handleMaterialChanged(materialData: any): void {
+    if (!this.selectedObject || !(this.selectedObject.material instanceof THREE.Material)) {
+      console.error('Selected object does not have a valid material');
+      return;
+    }
+  
+    const material = this.selectedObject.material;
+    material.opacity = materialData.opacity;
+    material.transparent = materialData.opacity < 1;
+    material.wireframe = materialData.wireframe;
+    material.emissive.set(materialData.emissiveColor);
+    material.needsUpdate = true;
+  }
+
+  handleGeometryChanged(geometryData: GeometryData): void {
+    if (!this.selectedObject || !(this.selectedObject instanceof THREE.Mesh)) {
+      console.error('No selected object or selected object is not a mesh');
+      return;
+    }
+
+    const geometry = this.selectedObject.geometry;
+
+    switch (geometryData.type) {
+      case 'scale':
+        if (geometryData.scale !== undefined) {
+          this.selectedObject.scale.set(geometryData.scale, geometryData.scale, geometryData.scale);
+        }
+        break;
+      case 'segments':
+        if (geometryData.segments !== undefined && geometry instanceof THREE.SphereGeometry) {
+          // Update segments for a sphere geometry
+          const newGeometry = new THREE.SphereGeometry(geometry.parameters.radius, geometryData.segments, geometryData.segments);
+          this.selectedObject.geometry.dispose(); // Dispose old geometry
+          this.selectedObject.geometry = newGeometry;
+        }
+        break;
+      default:
+        console.warn('Unsupported geometry update type');
+    }
+
+    this.selectedObject.geometry.needsUpdate = true;
+  }
+
+  handleLightingChanged(lightingData: any): void {
+    // Assuming you have a reference to the light object
+    const light = this.scene.getObjectByName('mainLight') as THREE.Light;
+    light.color.set(lightingData.color);
+    light.intensity = lightingData.intensity;
+  }
+
+  handleAnimationChanged(animationData: any): void {
+    // Update animation properties
+    console.log('Animation properties updated', animationData);
+  }
+
+  handleEffectsChanged(effectsData: any): void {
+    // Example: Update the scene's background color
+    if (effectsData.backgroundColor) {
+      this.scene.background = new THREE.Color(effectsData.backgroundColor);
+    }
+
+    // Example: Add or adjust fog in the scene
+    if (effectsData.fog) {
+      this.scene.fog = new THREE.Fog(effectsData.fog.color, effectsData.fog.near, effectsData.fog.far);
+    }
+  }
+
+  handleCubeLightingChanged(lightingData: any): void {
+    // Assuming you have a specific light for the cubes
+    const cubeLight = this.scene.getObjectByName('cubeLight') as THREE.Light;
+    if (cubeLight) {
+      cubeLight.color.set(lightingData.color);
+      cubeLight.intensity = lightingData.intensity;
+    } else {
+      // If there's no light, create one
+      const newLight = new THREE.PointLight(lightingData.color, lightingData.intensity);
+      newLight.name = 'cubeLight';
+      this.scene.add(newLight);
+    }
   }
 }

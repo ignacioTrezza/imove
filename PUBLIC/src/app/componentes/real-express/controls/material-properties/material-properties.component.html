@@ -1,0 +1,5 @@
+<div class="material-properties">
+  <label>Opacity: <input type="range" min="0" max="1" step="0.01" [(ngModel)]="opacity" (change)="updateMaterial()"></label>
+  <label>Wireframe: <input type="checkbox" [(ngModel)]="wireframe" (change)="updateMaterial()"></label>
+  <label>Emissive Color: <input type="color" [(ngModel)]="emissiveColor" (change)="updateMaterial()"></label>
+</div>

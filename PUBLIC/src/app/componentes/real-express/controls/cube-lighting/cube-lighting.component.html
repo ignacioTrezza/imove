@@ -1,0 +1,4 @@
+<div class="cube-lighting">
+  <label>Color: <input type="color" [(ngModel)]="color" (change)="updateLighting()"></label>
+  <label>Intensity: <input type="range" min="0" max="1" step="0.01" [(ngModel)]="intensity" (change)="updateLighting()"></label>
+</div>

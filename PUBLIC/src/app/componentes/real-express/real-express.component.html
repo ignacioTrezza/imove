@@ -1,12 +1,10 @@
-<div class="data-container">
-  <div class="button-container">
-    <button (click)="setMode('cubeRotation')" [ngClass]="{'active': (currentMode === 'cubeRotation')}">Cube Rotation</button>
-    <button (click)="setMode('cubePosition')" [ngClass]="{'active': (currentMode === 'cubePosition')}">Cube Position</button>
-    <button (click)="setMode('sceneRotation')" [ngClass]="{'active': (currentMode === 'sceneRotation')}">Scene Rotation</button>
-    <button (click)="setMode('scenePosition')" [ngClass]="{'active': (currentMode === 'scenePosition')}">Scene Position</button>
-    <button (click)="setMode('cameraRotation')" [ngClass]="{'active': (currentMode === 'cameraRotation')}">Camera Rotation</button>
-    <button (click)="setMode('cameraPosition')" [ngClass]="{'active': (currentMode === 'cameraPosition')}">Camera Position</button>
-  </div>
-  <div id="threejs-container" style="background-color: #643f3f;display: flex;"></div>
+<div id="threejs-container" style="width: 100%; height: 100%;"></div>
 
-</div>
+<app-general-controls (modeChanged)="handleModeChanged($event)"></app-general-controls>
+<app-cube-controls (cubeAdded)="handleCubeAdded($event)"></app-cube-controls>
+<app-material-properties (materialChanged)="handleMaterialChanged($event)"></app-material-properties>
+<app-geometry-modifications (geometryChanged)="handleGeometryChanged($event)"></app-geometry-modifications>
+<app-cube-lighting (lightingChanged)="handleLightingChanged($event)"></app-cube-lighting>
+<app-cube-animation (animationChanged)="handleAnimationChanged($event)"></app-cube-animation>
+<app-environment-effects (effectsChanged)="handleEffectsChanged($event)"></app-environment-effects>
+<app-cube-lighting (lightingChanged)="handleLightingChanged($event)"></app-cube-lighting>

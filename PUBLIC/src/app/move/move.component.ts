@@ -105,7 +105,7 @@ export class MoveComponent {
             if(this.electronService.isElectron){
                 this.electronService.electronAPI.clickIn(message.x, message.y);
             } else {
-              if (this.toggleRemoteClick) {
+              if (this.toggleClick) {
                 //Ya lo emitiste el evento por webSocket.. Lo estas recibiendo aca de hecho!
                 // this.websocketService.emitClick(message.x, message.y);
               }

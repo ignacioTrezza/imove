@@ -108,7 +108,7 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.store.pipe(select(AppSelectors.selectToggleRemoteClick)).subscribe(toggleRemoteClick => {
         this.toggleRemoteClick = toggleRemoteClick;
-        this.handleClientEvent(this.toggleRemoteClick);
+        // this.handleClientEvent(this.toggleRemoteClick);
       });
 
       this.store.pipe(select(AppSelectors.selectToggleEventHandling)).subscribe(toggleEventHandling => {
@@ -162,6 +162,7 @@ export class RealExpressComponent implements OnInit, OnDestroy, AfterViewInit {
       const delta = event.deltaY * 0.01;
       this.camera.position.z += delta;
     });
+    this.handleClientEvent(true);
     this.initializeStoreEvents();
   }
 
